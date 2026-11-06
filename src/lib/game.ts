@@ -1,3 +1,5 @@
+import type { Locale } from './i18n.js';
+
 export type CardEffect =
 	| { type: 'damage'; amount: number }
 	| { type: 'block'; amount: number }
@@ -8,6 +10,7 @@ export type CardEffect =
 
 export type Card = {
 	id: string;
+	cardKey: keyof typeof CARD_LIBRARY;
 	name: string;
 	cost: number;
 	description: string;
@@ -34,6 +37,7 @@ export type GameState = {
 	stageName: string;
 	encounter: number;
 	totalEncounters: number;
+	locale: Locale;
 	enemyIntent: EnemyIntent;
 	phase: GamePhase;
 	drawPile: Card[];
@@ -43,74 +47,80 @@ export type GameState = {
 };
 
 type CardTemplate = Omit<Card, 'id'>;
+type LocalizedText = Record<Locale, string>;
+
+type CardDefinition = Omit<CardTemplate, 'cardKey' | 'name' | 'description'> & {
+	name: LocalizedText;
+	description: LocalizedText;
+};
 
 const CARD_LIBRARY = {
 	ashBlade: {
-		name: 'Lâmina de Cinza',
+		name: { pt: 'Lâmina de Cinza', en: 'Ashen Blade' },
 		cost: 1,
-		description: 'Cause 7 de dano.',
+		description: { pt: 'Cause 7 de dano.', en: 'Deal 7 damage.' },
 		glyph: '⚔',
 		effect: { type: 'damage', amount: 7 }
 	},
 	ironStance: {
-		name: 'Postura de Ferro',
+		name: { pt: 'Postura de Ferro', en: 'Iron Stance' },
 		cost: 1,
-		description: 'Ganhe 6 de bloqueio.',
+		description: { pt: 'Ganhe 6 de bloqueio.', en: 'Gain 6 block.' },
 		glyph: '⬡',
 		effect: { type: 'block', amount: 6 }
 	},
 	breaker: {
-		name: 'Ruptura',
+		name: { pt: 'Ruptura', en: 'Rend' },
 		cost: 2,
-		description: 'Cause 14 de dano.',
+		description: { pt: 'Cause 14 de dano.', en: 'Deal 14 damage.' },
 		glyph: '✦',
 		effect: { type: 'damage', amount: 14 }
 	},
 	vitalDew: {
-		name: 'Orvalho Vital',
+		name: { pt: 'Orvalho Vital', en: 'Vital Dew' },
 		cost: 1,
-		description: 'Recupere 5 de vida.',
+		description: { pt: 'Recupere 5 de vida.', en: 'Restore 5 health.' },
 		glyph: '✧',
 		effect: { type: 'heal', amount: 5 }
 	},
 	poisonThorns: {
-		name: 'Espinhos Venenosos',
+		name: { pt: 'Espinhos Venenosos', en: 'Poison Thorns' },
 		cost: 1,
-		description: 'Envenene: 3 de dano por 3 turnos.',
+		description: { pt: 'Envenene: 3 de dano por 3 turnos.', en: 'Poison: 3 damage for 3 turns.' },
 		glyph: '☠',
 		effect: { type: 'poison', amount: 3, turns: 3 }
 	},
 	emberBreath: {
-		name: 'Fôlego da Brasa',
+		name: { pt: 'Fôlego da Brasa', en: 'Ember Breath' },
 		cost: 1,
-		description: 'Compre 2 cartas.',
+		description: { pt: 'Compre 2 cartas.', en: 'Draw 2 cards.' },
 		glyph: '⟳',
 		effect: { type: 'draw', amount: 2 }
 	},
 	lifeDrain: {
-		name: 'Dreno Vital',
+		name: { pt: 'Dreno Vital', en: 'Life Drain' },
 		cost: 2,
-		description: 'Cause 8 de dano e recupere 4 de vida.',
+		description: { pt: 'Cause 8 de dano e recupere 4 de vida.', en: 'Deal 8 damage and restore 4 health.' },
 		glyph: '♧',
 		effect: { type: 'drain', damage: 8, heal: 4 }
 	}
-} satisfies Record<string, CardTemplate>;
+} satisfies Record<string, CardDefinition>;
 
-const STARTING_DECK: [CardTemplate, number][] = [
-	[CARD_LIBRARY.ashBlade, 5],
-	[CARD_LIBRARY.ironStance, 4],
-	[CARD_LIBRARY.breaker, 2],
-	[CARD_LIBRARY.vitalDew, 1],
-	[CARD_LIBRARY.poisonThorns, 1],
-	[CARD_LIBRARY.emberBreath, 1],
-	[CARD_LIBRARY.lifeDrain, 1]
+const STARTING_DECK: [keyof typeof CARD_LIBRARY, number][] = [
+	['ashBlade', 5],
+	['ironStance', 4],
+	['breaker', 2],
+	['vitalDew', 1],
+	['poisonThorns', 1],
+	['emberBreath', 1],
+	['lifeDrain', 1]
 ];
 
 const ENCOUNTERS = [
 	{
-		stageName: 'AS TERRAS AFUNDADAS',
-		enemyName: 'O Vigia Oco',
-		enemyTitle: 'GUARDIÃO DA PASSAGEM',
+		stageName: { pt: 'AS TERRAS AFUNDADAS', en: 'THE SUNKEN LANDS' },
+		enemyName: { pt: 'O Vigia Oco', en: 'The Hollow Watcher' },
+		enemyTitle: { pt: 'GUARDIÃO DA PASSAGEM', en: 'GATEKEEPER' },
 		enemyMaxHp: 52,
 		minAttack: 9,
 		maxAttack: 11,
@@ -118,9 +128,9 @@ const ENCOUNTERS = [
 		guardEvery: 3
 	},
 	{
-		stageName: 'O BREJO DOS SUSSURROS',
-		enemyName: 'A Bruxa do Brejo',
-		enemyTitle: 'TECELÃ DE RAÍZES',
+		stageName: { pt: 'O BREJO DOS SUSSURROS', en: 'THE WHISPERING MARSH' },
+		enemyName: { pt: 'A Bruxa do Brejo', en: 'The Marsh Witch' },
+		enemyTitle: { pt: 'TECELÃ DE RAÍZES', en: 'ROOT WEAVER' },
 		enemyMaxHp: 64,
 		minAttack: 10,
 		maxAttack: 13,
@@ -128,9 +138,9 @@ const ENCOUNTERS = [
 		guardEvery: 3
 	},
 	{
-		stageName: 'O ALTAR DAS CINZAS',
-		enemyName: 'O Cervo de Cinzas',
-		enemyTitle: 'SENHOR DO ALTAR',
+		stageName: { pt: 'O ALTAR DAS CINZAS', en: 'THE ALTAR OF ASH' },
+		enemyName: { pt: 'O Cervo de Cinzas', en: 'The Ashen Stag' },
+		enemyTitle: { pt: 'SENHOR DO ALTAR', en: 'LORD OF THE ALTAR' },
 		enemyMaxHp: 78,
 		minAttack: 12,
 		maxAttack: 15,
@@ -163,6 +173,14 @@ function addLog(state: GameState, message: string): GameState {
 	return { ...state, log: [message, ...state.log].slice(0, 4) };
 }
 
+function localized(locale: Locale, pt: string, en: string): string {
+	return locale === 'pt' ? pt : en;
+}
+
+function addLocalizedLog(state: GameState, pt: string, en: string): GameState {
+	return addLog(state, localized(state.locale, pt, en));
+}
+
 function drawCards(state: GameState, count: number): GameState {
 	let drawPile = [...state.drawPile];
 	const discardPile = [...state.discardPile];
@@ -181,10 +199,21 @@ function drawCards(state: GameState, count: number): GameState {
 	return { ...state, drawPile, discardPile, hand };
 }
 
-export function createRun(randomize = true): GameState {
+function createCard(cardKey: keyof typeof CARD_LIBRARY, id: string, locale: Locale): Card {
+	const definition = CARD_LIBRARY[cardKey];
+	return {
+		...definition,
+		cardKey,
+		id,
+		name: definition.name[locale],
+		description: definition.description[locale]
+	};
+}
+
+export function createRun(randomize = true, locale: Locale = 'pt'): GameState {
 	let nextCardId = 0;
-	const cards = STARTING_DECK.flatMap(([card, copies]) =>
-		Array.from({ length: copies }, () => ({ ...card, id: `card-${nextCardId++}` }))
+	const cards = STARTING_DECK.flatMap(([cardKey, copies]) =>
+		Array.from({ length: copies }, () => createCard(cardKey, `card-${nextCardId++}`, locale))
 	);
 	const drawPile = randomize ? shuffle(cards) : cards;
 	const firstEncounter = ENCOUNTERS[0];
@@ -199,17 +228,24 @@ export function createRun(randomize = true): GameState {
 		enemyBlock: 0,
 		enemyPoison: 0,
 		enemyPoisonTurns: 0,
-		enemyName: firstEncounter.enemyName,
-		enemyTitle: firstEncounter.enemyTitle,
-		stageName: firstEncounter.stageName,
+		enemyName: firstEncounter.enemyName[locale],
+		enemyTitle: firstEncounter.enemyTitle[locale],
+		stageName: firstEncounter.stageName[locale],
 		encounter: 0,
 		totalEncounters: ENCOUNTERS.length,
+		locale,
 		enemyIntent: makeEnemyIntent(1, 0, randomize),
 		phase: 'playing',
 		drawPile,
 		discardPile: [],
 		hand: [],
-		log: ['A névoa se move. O Vigia Oco prepara o próximo golpe.']
+		log: [
+			localized(
+				locale,
+				`A névoa se move. ${firstEncounter.enemyName.pt} prepara o próximo golpe.`,
+				`The mist shifts. ${firstEncounter.enemyName.en} prepares to strike.`
+			)
+		]
 	};
 
 	return drawCards(initialState, 5);
@@ -234,24 +270,44 @@ export function playCard(state: GameState, cardId: string): GameState {
 			enemyHp: Math.max(0, next.enemyHp - damage),
 			enemyBlock: next.enemyBlock - absorbed
 		};
-		next = addLog(next, `${card.name}: ${damage} de dano a ${next.enemyName}.`);
+		next = addLocalizedLog(
+			next,
+			`${card.name}: ${damage} de dano a ${next.enemyName}.`,
+			`${card.name}: ${damage} damage to ${next.enemyName}.`
+		);
 	} else if (card.effect.type === 'block') {
 		next = { ...next, playerBlock: next.playerBlock + card.effect.amount };
-		next = addLog(next, `${card.name}: +${card.effect.amount} de bloqueio.`);
+		next = addLocalizedLog(
+			next,
+			`${card.name}: +${card.effect.amount} de bloqueio.`,
+			`${card.name}: +${card.effect.amount} block.`
+		);
 	} else if (card.effect.type === 'heal') {
 		const healed = Math.min(card.effect.amount, next.playerMaxHp - next.playerHp);
 		next = { ...next, playerHp: next.playerHp + healed };
-		next = addLog(next, `${card.name}: recuperou ${healed} de vida.`);
+		next = addLocalizedLog(
+			next,
+			`${card.name}: recuperou ${healed} de vida.`,
+			`${card.name}: restored ${healed} health.`
+		);
 	} else if (card.effect.type === 'poison') {
 		next = {
 			...next,
 			enemyPoison: next.enemyPoison + card.effect.amount,
 			enemyPoisonTurns: Math.max(next.enemyPoisonTurns, card.effect.turns)
 		};
-		next = addLog(next, `${card.name}: ${next.enemyName} foi envenenado.`);
+		next = addLocalizedLog(
+			next,
+			`${card.name}: ${next.enemyName} foi envenenado.`,
+			`${card.name}: ${next.enemyName} is poisoned.`
+		);
 	} else if (card.effect.type === 'draw') {
 		next = drawCards(next, card.effect.amount);
-		next = addLog(next, `${card.name}: comprou ${card.effect.amount} cartas.`);
+		next = addLocalizedLog(
+			next,
+			`${card.name}: comprou ${card.effect.amount} cartas.`,
+			`${card.name}: drew ${card.effect.amount} cards.`
+		);
 	} else {
 		const absorbed = Math.min(next.enemyBlock, card.effect.damage);
 		const damage = card.effect.damage - absorbed;
@@ -262,12 +318,20 @@ export function playCard(state: GameState, cardId: string): GameState {
 			enemyBlock: next.enemyBlock - absorbed,
 			playerHp: next.playerHp + healed
 		};
-		next = addLog(next, `${card.name}: ${damage} de dano e +${healed} de vida.`);
+		next = addLocalizedLog(
+			next,
+			`${card.name}: ${damage} de dano e +${healed} de vida.`,
+			`${card.name}: ${damage} damage and +${healed} health.`
+		);
 	}
 
 	if (next.enemyHp === 0) {
 		next = { ...next, phase: 'victory' };
-		next = addLog(next, `${next.enemyName} caiu. A passagem está livre.`);
+		next = addLocalizedLog(
+			next,
+			`${next.enemyName} caiu. A passagem está livre.`,
+			`${next.enemyName} falls. The path is clear.`
+		);
 	}
 
 	return next;
@@ -289,18 +353,44 @@ export function advanceEncounter(state: GameState): GameState {
 		enemyBlock: 0,
 		enemyPoison: 0,
 		enemyPoisonTurns: 0,
-		enemyName: nextStats.enemyName,
-		enemyTitle: nextStats.enemyTitle,
-		stageName: nextStats.stageName,
+		enemyName: nextStats.enemyName[state.locale],
+		enemyTitle: nextStats.enemyTitle[state.locale],
+		stageName: nextStats.stageName[state.locale],
 		encounter: nextEncounter,
 		enemyIntent: makeEnemyIntent(1, nextEncounter),
 		phase: 'playing',
 		discardPile: [...state.discardPile, ...state.hand],
 		hand: [],
-		log: [`Uma brasa restaura 8 de vida. ${nextStats.enemyName} surge à frente.`]
+		log: [
+			localized(
+				state.locale,
+				`Uma brasa restaura 8 de vida. ${nextStats.enemyName.pt} surge à frente.`,
+				`An ember restores 8 health. ${nextStats.enemyName.en} appears ahead.`
+			)
+		]
 	};
 
 	return drawCards(next, 5);
+}
+
+export function setGameLocale(state: GameState, locale: Locale): GameState {
+	if (state.locale === locale) return state;
+
+	const localizeCards = (cards: Card[]) =>
+		cards.map((card) => createCard(card.cardKey, card.id, locale));
+	const encounter = ENCOUNTERS[state.encounter];
+
+	return {
+		...state,
+		locale,
+		enemyName: encounter.enemyName[locale],
+		enemyTitle: encounter.enemyTitle[locale],
+		stageName: encounter.stageName[locale],
+		drawPile: localizeCards(state.drawPile),
+		discardPile: localizeCards(state.discardPile),
+		hand: localizeCards(state.hand),
+		log: []
+	};
 }
 
 export function endTurn(state: GameState): GameState {
@@ -313,11 +403,19 @@ export function endTurn(state: GameState): GameState {
 			enemyHp: Math.max(0, next.enemyHp - state.enemyPoison),
 			enemyPoisonTurns: state.enemyPoisonTurns - 1
 		};
-		next = addLog(next, `${state.enemyName} sofre ${state.enemyPoison} de dano venenoso.`);
+		next = addLocalizedLog(
+			next,
+			`${state.enemyName} sofre ${state.enemyPoison} de dano venenoso.`,
+			`${state.enemyName} takes ${state.enemyPoison} poison damage.`
+		);
 		if (next.enemyPoisonTurns === 0) next = { ...next, enemyPoison: 0 };
 		if (next.enemyHp === 0) {
 			next = { ...next, phase: 'victory' };
-			next = addLog(next, `${state.enemyName} sucumbiu ao veneno.`);
+			next = addLocalizedLog(
+				next,
+				`${state.enemyName} sucumbiu ao veneno.`,
+				`${state.enemyName} succumbs to the poison.`
+			);
 			return next;
 		}
 	}
@@ -325,10 +423,18 @@ export function endTurn(state: GameState): GameState {
 	if (state.enemyIntent.type === 'attack') {
 		const damage = Math.max(0, state.enemyIntent.amount - state.playerBlock);
 		next = { ...next, playerHp: Math.max(0, state.playerHp - damage) };
-		next = addLog(next, `${state.enemyName} ataca: ${damage} de dano recebido.`);
+		next = addLocalizedLog(
+			next,
+			`${state.enemyName} ataca: ${damage} de dano recebido.`,
+			`${state.enemyName} attacks: you take ${damage} damage.`
+		);
 	} else {
 		next = { ...next, enemyBlock: next.enemyBlock + state.enemyIntent.amount };
-		next = addLog(next, `${state.enemyName} se protege: +${state.enemyIntent.amount} de bloqueio.`);
+		next = addLocalizedLog(
+			next,
+			`${state.enemyName} se protege: +${state.enemyIntent.amount} de bloqueio.`,
+			`${state.enemyName} guards: +${state.enemyIntent.amount} block.`
+		);
 	}
 
 	if (next.playerHp === 0) {
