@@ -1,56 +1,50 @@
-# sv
+# Véu de Cinzas
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Um RPG original de cartas por turnos, ambientado em um mundo de fantasia sombria. O jogo tem menu inicial, tela “Sobre”, combate com cartas e três fases. A interface pode ser alternada entre português e inglês.
 
-## Creating a project
+## Tecnologias
 
-If you're seeing this, you've probably already done this step. Congrats!
+- SvelteKit e Svelte para a interface
+- TypeScript para as regras e interações do jogo
+- CSS para os estilos
 
-```sh
-# create a new project
-npx sv create my-app
-```
+## Executar localmente
 
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-npx sv@1.3.0 create --template minimal --types ts --install npm .
-```
-
-## Adding features
-
-Add features to your project with `sv add`:
+Requer Node.js e npm.
 
 ```sh
-npx sv add
-```
-
-For example, to add Tailwind CSS:
-
-```sh
-npx sv add tailwindcss
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
+npm install
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+Para validar os tipos e os componentes Svelte:
 
-To create a production version of your app:
+```sh
+npm run check
+```
+
+Para gerar e visualizar a versão de produção:
 
 ```sh
 npm run build
+npm run preview
 ```
 
-You can preview the production build with `npm run preview`.
+## Estrutura
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+- `src/routes/+page.svelte`: telas e interface do jogo
+- `src/routes/game.css`: estilos
+- `src/lib/game.ts`: baralho, combate, efeitos das cartas e progressão das fases
+- `src/lib/i18n.ts`: textos da interface em português e inglês
+
+## Alterações recentes
+
+- Adicionadas telas de início e “Sobre”, com navegação para o combate.
+- Incluída troca de idioma entre português e inglês, inclusive durante uma partida.
+- Expandido o jogo para três fases com inimigos e dificuldade crescentes.
+- Adicionadas cartas de veneno, compra de cartas e dreno de vida.
+- Organizados os estilos em arquivo CSS separado e removido código de template não utilizado.
+
+## Versão
+
+A versão declarada atualmente em `package.json` é `0.0.1`. Atualize-a junto com o `package-lock.json` quando preparar uma nova versão.

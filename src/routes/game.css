@@ -17,6 +17,9 @@
 	.brand-mark { display: grid; width: 31px; height: 31px; place-items: center; border: 1px solid #94764b; color: #d7b87a; font-family: Georgia, serif; font-size: 19px; }
 	.run-label, .restart-link { color: #858075; font-size: 10px; letter-spacing: .17em; }
 	.top-actions { display: flex; align-items: center; gap: 18px; }
+	.language-switch { display: flex; gap: 3px; padding: 3px; border: 1px solid #ffffff16; }
+	.language-switch button { padding: 5px 7px; border: 0; background: transparent; color: #827a6c; cursor: pointer; font-size: 9px; letter-spacing: .08em; }
+	.language-switch button.active-language { background: #95764a30; color: #e0c58f; }
 	.live-dot { display: inline-block; width: 6px; height: 6px; margin-right: 8px; border-radius: 50%; background: #ba8f56; box-shadow: 0 0 11px #ba8f5680; }
 	.restart-link { border: 0; background: transparent; cursor: pointer; }
 	.restart-link span { padding-left: 8px; color: #c9a66c; font-size: 16px; }
@@ -58,7 +61,7 @@
 	.edit-hint { margin: 17px 0 0; color: #777064; font-size: 9px; line-height: 1.7; }
 	.edit-hint code { color: #c6ad7d; }
 	.about-back { margin-top: 25px; }
-	.brand:focus-visible, .restart-link:focus-visible, .primary-action:focus-visible, .secondary-action:focus-visible { outline: 2px solid #d2b579; outline-offset: 3px; }
+	.brand:focus-visible, .restart-link:focus-visible, .primary-action:focus-visible, .secondary-action:focus-visible, .language-switch button:focus-visible, .card:focus-visible, .end-turn:focus-visible { outline: 2px solid #d2b579; outline-offset: 3px; }
 	main { padding-top: 37px; }
 	.chapter-line { display: flex; justify-content: space-between; align-items: end; margin-bottom: 20px; }
 	.eyebrow { margin: 0; color: #9e917c; font-size: 9px; font-weight: 700; letter-spacing: .19em; }
@@ -150,7 +153,6 @@
 		transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
 	}
 	.card:hover:not(:disabled) { z-index: 2; transform: translateY(-8px); border-color: #c2a466; box-shadow: 0 8px 22px #0008; }
-	.card:focus-visible, .end-turn:focus-visible, .restart-link:focus-visible { outline: 2px solid #d2b579; outline-offset: 3px; }
 	.card:disabled { cursor: not-allowed; }
 	.card.unaffordable { opacity: .58; }
 	.card-cost { position: absolute; top: 7px; left: 8px; display: grid; width: 21px; height: 21px; place-items: center; border: 1px solid #c1a469; border-radius: 50%; background: #28251e; color: #e1c47f; font-size: 10px; font-weight: 700; }
@@ -190,6 +192,7 @@
 		.brand { font-size: 10px; }
 		.run-label { display: none; }
 		.top-actions { gap: 8px; }
+		.language-switch button { padding: 5px; }
 		.title-screen, .about-screen { min-height: calc(100vh - 145px); }
 		.title-orbit { width: 200px; transform: translate(-50%, -72%); }
 		.orbit-mark { font-size: 110px; }
