@@ -1,0 +1,452 @@
+<script lang="ts">
+	import { createRun, endTurn, playCard, type GameState } from '#lib/game.js';
+
+	type Screen = 'menu' | 'about' | 'game';
+
+	const aboutContent = {
+		description:
+			'Explore um bosque esquecido, enfrente criaturas antigas e descubra o que restou da última chama.',
+		genre: 'RPG de cartas por turnos',
+		creator: 'Seu nome ou grupo',
+		version: 'Protótipo — Unidade 1'
+	};
+
+	let screen = $state<Screen>('menu');
+	let game = $state<GameState>(createRun(false));
+
+	function startGame() {
+		game = createRun();
+		screen = 'game';
+	}
+
+	function returnToMenu() {
+		screen = 'menu';
+	}
+
+	function useCard(cardId: string) {
+		game = playCard(game, cardId);
+	}
+
+	function finishTurn() {
+		game = endTurn(game);
+	}
+
+	function restartRun() {
+		game = createRun();
+		screen = 'game';
+	}
+</script>
+
+<svelte:head>
+	<title>Véu de Cinzas — uma aventura de cartas</title>
+	<meta
+		name="description"
+		content="Enfrente o Vigia Oco em um protótipo de aventura de cartas e fantasia sombria."
+	/>
+</svelte:head>
+
+<div class="game-shell">
+	<header class="topbar">
+		<button class="brand" type="button" onclick={returnToMenu} aria-label="Voltar ao início">
+			<span class="brand-mark">V</span>
+			<span>VÉU <i>DE</i> CINZAS</span>
+		</button>
+		<div class="run-label"><span class="live-dot"></span> {screen === 'game' ? 'A TRILHA ESQUECIDA' : 'UMA AVENTURA ORIGINAL'}</div>
+		<nav class="top-actions" aria-label="Navegação">
+			{#if screen === 'menu'}
+				<button class="restart-link" onclick={() => (screen = 'about')}>Sobre <span>↗</span></button>
+			{:else if screen === 'about'}
+				<button class="restart-link" onclick={returnToMenu}>Voltar ao início <span>←</span></button>
+			{:else}
+				<button class="restart-link" onclick={returnToMenu}>Menu <span>⌂</span></button>
+				<button class="restart-link" onclick={restartRun}>Nova jornada <span>↻</span></button>
+			{/if}
+		</nav>
+	</header>
+
+	{#if screen === 'menu'}
+		<main class="title-screen">
+			<div class="title-orbit" aria-hidden="true">
+				<span class="orbit-mark">V</span>
+				<span class="orbit-star">✦</span>
+			</div>
+			<div class="title-content">
+				<p class="eyebrow"><span>✦</span> AS TERRAS AFUNDADAS <span>✦</span></p>
+				<h1>Véu <i>de</i><br />Cinzas</h1>
+				<p class="title-subtitle">Quando a última chama se apagar,<br />quem ainda se lembrará do caminho?</p>
+				<div class="title-actions">
+					<button class="primary-action" onclick={startGame}>Começar jornada <span>→</span></button>
+					<button class="secondary-action" onclick={() => (screen = 'about')}>Sobre o jogo</button>
+				</div>
+				<p class="title-footnote"><span class="live-dot"></span> UMA AVENTURA DE FANTASIA SOMBRIA</p>
+			</div>
+			<div class="title-bottom"><span>CAPÍTULO I</span><span>✧</span><span>O BOSQUE SEM AURORA</span></div>
+		</main>
+	{:else if screen === 'about'}
+		<main class="about-screen">
+			<div class="about-heading">
+				<p class="eyebrow">VÉU DE CINZAS <span>•</span> INFORMAÇÕES</p>
+				<h1>Sobre o jogo</h1>
+				<p>Um mundo esquecido, uma chama teimosa e uma jornada que está apenas começando.</p>
+			</div>
+			<section class="about-card" aria-label="Informações do jogo">
+				<div class="about-emblem" aria-hidden="true">V</div>
+				<div class="about-details">
+					<p class="eyebrow">A HISTÓRIA</p>
+					<p class="about-description">{aboutContent.description}</p>
+					<dl>
+						<div><dt>Gênero</dt><dd>{aboutContent.genre}</dd></div>
+						<div><dt>Desenvolvido por</dt><dd>{aboutContent.creator}</dd></div>
+						<div><dt>Versão</dt><dd>{aboutContent.version}</dd></div>
+					</dl>
+					<p class="edit-hint">Para editar estas informações, altere <code>aboutContent</code> no início de <code>src/routes/+page.svelte</code>.</p>
+				</div>
+			</section>
+			<button class="primary-action about-back" onclick={returnToMenu}>Voltar ao início <span>←</span></button>
+		</main>
+	{:else}
+	<main>
+		<div class="chapter-line">
+			<div>
+				<p class="eyebrow">CAPÍTULO I <span>•</span> AS TERRAS AFUNDADAS</p>
+				<h1>O bosque sem aurora</h1>
+			</div>
+			<div class="encounter-number"><span>ENCONTRO</span><strong>01 <i>/ 03</i></strong></div>
+		</div>
+
+		<section class="battle-board" aria-label="Campo de batalha">
+			<div class="atmosphere"></div>
+			<div class="ground-glow"></div>
+
+			<aside class="hero-panel">
+				<div class="hero-avatar"><span>ᚨ</span><i></i></div>
+				<p class="eyebrow">A ERRANTE</p>
+				<h2>Maera</h2>
+				<p class="hero-subtitle">Portadora da última chama</p>
+				<div class="health-label"><span>VITALIDADE</span><strong>{game.playerHp}<small> / {game.playerMaxHp}</small></strong></div>
+				<div class="health-track"><span class="health-fill" style={`width: ${(game.playerHp / game.playerMaxHp) * 100}%`}></span></div>
+				{#if game.playerBlock > 0}
+					<div class="block-pill">⬡ <strong>{game.playerBlock}</strong> bloqueio</div>
+				{/if}
+				<div class="hero-meta"><span>✦</span> Em busca de um caminho de volta</div>
+			</aside>
+
+			<div class="combat-center">
+				<div class="enemy-intent" class:guarding={game.enemyIntent.type === 'guard'}>
+					<span class="intent-icon">{game.enemyIntent.type === 'attack' ? '⌁' : '⬡'}</span>
+					<div>
+						<strong>{game.enemyIntent.type === 'attack' ? 'PREPARA UM GOLPE' : 'VAI SE PROTEGER'}</strong>
+						<span>{game.enemyIntent.type === 'attack' ? `${game.enemyIntent.amount} de dano` : `${game.enemyIntent.amount} de bloqueio`}</span>
+					</div>
+				</div>
+
+				<div class="enemy-art" aria-label="O Vigia Oco">
+					<div class="enemy-halo"></div>
+					<div class="enemy-cloak"></div>
+					<div class="enemy-mask">
+						<span class="eye eye-left"></span><span class="eye eye-right"></span>
+						<span class="mask-mark"></span>
+					</div>
+					<div class="enemy-crown">⌁</div>
+					<div class="enemy-shadow"></div>
+					{#if game.enemyBlock > 0}
+						<div class="enemy-shield">⬡ {game.enemyBlock}</div>
+					{/if}
+				</div>
+
+				<div class="enemy-details">
+					<p class="eyebrow">GUARDIÃO DA PASSAGEM</p>
+					<h2>O Vigia Oco</h2>
+					<div class="enemy-health">
+						<span class="health-track"><span class="enemy-health-fill" style={`width: ${(game.enemyHp / game.enemyMaxHp) * 100}%`}></span></span>
+						<strong>{game.enemyHp}<small> / {game.enemyMaxHp}</small></strong>
+					</div>
+				</div>
+				<div class="combat-log" aria-live="polite">
+					{#each game.log.slice(0, 2) as entry, index (entry + index)}
+						<p>{entry}</p>
+					{/each}
+				</div>
+			</div>
+
+			<aside class="relic-panel">
+				<p class="eyebrow">RELICÁRIO</p>
+				<div class="relic-icon">✧</div>
+				<strong>Brasa adormecida</strong>
+				<span>Uma chama que ainda se lembra.</span>
+				<div class="relic-divider"></div>
+				<p class="relic-note">Cada jornada revela um fragmento diferente deste mundo.</p>
+			</aside>
+
+			<div class="turn-indicator"><span>RODADA</span><strong>{String(game.turn).padStart(2, '0')}</strong></div>
+		</section>
+
+		<section class="action-area" aria-label="Sua mão">
+			<div class="hand-heading">
+				<div class="pile-count"><span class="pile-icon">▤</span><span>COMPRA <strong>{game.drawPile.length}</strong></span></div>
+				<div class="hand-title"><span class="eyebrow">SUA MÃO</span><span class="hand-count">{game.hand.length} cartas</span></div>
+				<div class="pile-count discard-count"><span>DESCARTE <strong>{game.discardPile.length}</strong></span><span class="pile-icon">▤</span></div>
+			</div>
+
+			<div class="cards-row">
+				{#each game.hand as card (card.id)}
+					<button
+						class="card"
+						class:unaffordable={game.energy < card.cost}
+						disabled={game.energy < card.cost || game.phase !== 'playing'}
+						onclick={() => useCard(card.id)}
+						aria-label={`${card.name}, custa ${card.cost} de energia. ${card.description}`}
+					>
+						<span class="card-cost">{card.cost}</span>
+						<span class="card-art" class:art-attack={card.effect.type === 'damage'} class:art-guard={card.effect.type === 'block'} class:art-heal={card.effect.type === 'heal'}>
+							<span>{card.glyph}</span>
+						</span>
+						<strong class="card-name">{card.name}</strong>
+						<span class="card-rule"></span>
+						<span class="card-description">{card.description}</span>
+						<span class="card-type">{card.effect.type === 'damage' ? 'ATAQUE' : card.effect.type === 'block' ? 'TÉCNICA' : 'RITUAL'}</span>
+					</button>
+				{/each}
+			</div>
+
+			<div class="controls-row">
+				<div class="energy-display">
+					<span class="energy-gem">✦</span>
+					<span class="energy-value">{game.energy}</span>
+					<span class="energy-divider">/</span>
+					<span class="energy-max">3</span>
+					<span class="energy-label">ENERGIA</span>
+				</div>
+				{#if game.phase === 'playing'}
+					<button class="end-turn" onclick={finishTurn}>Encerrar turno <span>→</span></button>
+				{:else}
+					<div class="result-banner" class:victory={game.phase === 'victory'}>
+						<strong>{game.phase === 'victory' ? 'VITÓRIA' : 'FIM DE JORNADA'}</strong>
+						<button onclick={restartRun}>Jogar novamente <span>↻</span></button>
+					</div>
+				{/if}
+				<div class="deck-hint">Escolha suas cartas com sabedoria.</div>
+			</div>
+		</section>
+	</main>
+	{/if}
+	<footer><span>VÉU DE CINZAS</span><span>PROTÓTIPO JOGÁVEL <i>•</i> UMA AVENTURA ORIGINAL</span></footer>
+</div>
+
+<style>
+	:global(*) { box-sizing: border-box; }
+	:global(html) { min-width: 360px; background: #10100f; }
+	:global(body) {
+		margin: 0;
+		color: #e7e1d5;
+		background:
+			radial-gradient(ellipse at 50% 0%, rgba(112, 78, 42, .12), transparent 42rem),
+			#10100f;
+		font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+		font-size: 14px;
+	}
+	:global(button) { font: inherit; }
+	.game-shell { max-width: 1440px; min-height: 100vh; margin: auto; padding: 0 58px; }
+	.topbar { height: 77px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #ffffff12; }
+	.brand { display: flex; gap: 11px; align-items: center; padding: 0; border: 0; background: transparent; color: #e8dfce; cursor: pointer; font-size: 12px; font-weight: 800; letter-spacing: .19em; }
+	.brand i { color: #9c8b72; font-style: normal; font-weight: 400; }
+	.brand-mark { display: grid; width: 31px; height: 31px; place-items: center; border: 1px solid #94764b; color: #d7b87a; font-family: Georgia, serif; font-size: 19px; }
+	.run-label, .restart-link { color: #858075; font-size: 10px; letter-spacing: .17em; }
+	.top-actions { display: flex; align-items: center; gap: 18px; }
+	.live-dot { display: inline-block; width: 6px; height: 6px; margin-right: 8px; border-radius: 50%; background: #ba8f56; box-shadow: 0 0 11px #ba8f5680; }
+	.restart-link { border: 0; background: transparent; cursor: pointer; }
+	.restart-link span { padding-left: 8px; color: #c9a66c; font-size: 16px; }
+	.title-screen { position: relative; display: grid; min-height: min(690px, calc(100vh - 145px)); overflow: hidden; place-items: center; padding: 48px 20px; text-align: center; }
+	.title-screen::before { position: absolute; top: 50%; left: 50%; width: min(68vw, 680px); aspect-ratio: 1; border: 1px solid #a68a4d12; border-radius: 50%; background: radial-gradient(circle, #a2792510 0, #7d56100a 34%, transparent 68%); content: ""; transform: translate(-50%, -50%); }
+	.title-orbit { position: absolute; top: 50%; left: 50%; display: grid; width: 250px; aspect-ratio: 1; place-items: center; border: 1px solid #a98d4e1f; border-radius: 50%; transform: translate(-50%, -70%); }
+	.title-orbit::before, .title-orbit::after { position: absolute; inset: 14px; border: 1px solid #a98d4e17; border-radius: 50%; content: ""; }
+	.title-orbit::after { inset: -18px; border-style: dashed; opacity: .42; }
+	.orbit-mark { color: #b08d54; font-family: Georgia, serif; font-size: 142px; opacity: .13; }
+	.orbit-star { position: absolute; top: 15px; right: 22px; color: #c2a265; font-size: 17px; }
+	.title-content { z-index: 1; padding-top: 40px; }
+	.title-content > .eyebrow { color: #b49b6e; }
+	.title-content > .eyebrow span { padding: 0 8px; color: #c59d56; }
+	.title-content h1 { margin: 20px 0 15px; color: #eee5d4; font-family: Georgia, "Times New Roman", serif; font-size: clamp(58px, 9vw, 104px); font-weight: 400; letter-spacing: -.055em; line-height: .82; text-shadow: 0 5px 35px #000; }
+	.title-content h1 i { color: #b89a67; font-size: .48em; font-weight: 400; letter-spacing: .02em; }
+	.title-subtitle { margin: 25px 0 29px; color: #a39a8b; font-family: Georgia, serif; font-size: 15px; line-height: 1.8; }
+	.title-actions { display: flex; flex-direction: column; align-items: center; gap: 13px; }
+	.primary-action { min-width: 220px; padding: 13px 20px; border: 1px solid #a78a54; border-radius: 2px; background: linear-gradient(110deg, #70532c75, #4a392060); color: #e8d5ae; cursor: pointer; font-size: 11px; letter-spacing: .08em; transition: background .18s ease, border-color .18s ease, transform .18s ease; }
+	.primary-action:hover { transform: translateY(-2px); border-color: #d0ad6c; background: #83623990; }
+	.primary-action span { margin-left: 16px; color: #d5b477; }
+	.secondary-action { padding: 7px 12px; border: 0; background: transparent; color: #908777; cursor: pointer; font-size: 10px; letter-spacing: .13em; }
+	.secondary-action:hover, .restart-link:hover { color: #d4bd91; }
+	.title-footnote { margin: 32px 0 0; color: #736d61; font-size: 8px; letter-spacing: .18em; }
+	.title-footnote .live-dot { width: 5px; height: 5px; }
+	.title-bottom { position: absolute; right: 0; bottom: 21px; left: 0; display: flex; justify-content: center; gap: 14px; color: #696357; font-size: 8px; letter-spacing: .18em; }
+	.title-bottom span:nth-child(2) { color: #a68751; }
+	.about-screen { display: flex; min-height: min(690px, calc(100vh - 145px)); flex-direction: column; align-items: center; justify-content: center; padding: 55px 20px; }
+	.about-heading { max-width: 620px; margin-bottom: 30px; text-align: center; }
+	.about-heading h1 { margin: 14px 0 10px; font-size: clamp(32px, 5vw, 48px); }
+	.about-heading > p:last-child { color: #9c9487; font-family: Georgia, serif; font-size: 13px; line-height: 1.7; }
+	.about-card { display: grid; width: min(100%, 700px); grid-template-columns: 150px 1fr; gap: 30px; padding: 30px; border: 1px solid #ffffff14; background: linear-gradient(135deg, #211f1a, #171615); }
+	.about-emblem { display: grid; min-height: 150px; place-items: center; border: 1px solid #a88b5338; background: radial-gradient(circle, #99753824, transparent 70%); color: #bb9c62; font-family: Georgia, serif; font-size: 84px; }
+	.about-details > .eyebrow { margin-bottom: 12px; color: #c5a873; }
+	.about-description { color: #ddd4c5; font-family: Georgia, serif; font-size: 16px; line-height: 1.8; }
+	.about-details dl { margin: 23px 0 0; border-top: 1px solid #ffffff12; }
+	.about-details dl > div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid #ffffff12; font-size: 10px; }
+	.about-details dt { color: #817a6e; }
+	.about-details dd { margin: 0; color: #c9bda9; text-align: right; }
+	.edit-hint { margin: 17px 0 0; color: #777064; font-size: 9px; line-height: 1.7; }
+	.edit-hint code { color: #c6ad7d; }
+	.about-back { margin-top: 25px; }
+	.brand:focus-visible, .restart-link:focus-visible, .primary-action:focus-visible, .secondary-action:focus-visible { outline: 2px solid #d2b579; outline-offset: 3px; }
+	main { padding-top: 37px; }
+	.chapter-line { display: flex; justify-content: space-between; align-items: end; margin-bottom: 20px; }
+	.eyebrow { margin: 0; color: #9e917c; font-size: 9px; font-weight: 700; letter-spacing: .19em; }
+	.eyebrow span { padding: 0 5px; color: #aa8050; }
+	h1, h2, p { margin-top: 0; }
+	h1 { margin: 8px 0 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(24px, 3vw, 34px); font-weight: 400; letter-spacing: -.025em; }
+	.encounter-number { display: flex; align-items: center; gap: 11px; color: #857c6c; font-size: 9px; letter-spacing: .15em; }
+	.encounter-number strong { color: #ddd2c0; font-size: 14px; letter-spacing: .04em; }
+	.encounter-number i { color: #70685c; font-size: 11px; font-style: normal; font-weight: 400; }
+	.battle-board {
+		position: relative; display: grid; grid-template-columns: 220px minmax(320px, 1fr) 220px; align-items: center;
+		min-height: 390px; overflow: hidden; border: 1px solid #ffffff12; border-radius: 3px;
+		background: linear-gradient(180deg, #1d1b19 0%, #211e1a 52%, #171614 100%);
+	}
+	.atmosphere { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 73%, #b478391b, transparent 37%), linear-gradient(90deg, #08080842, transparent 25%, transparent 76%, #08080842); pointer-events: none; }
+	.ground-glow { position: absolute; right: 18%; bottom: -92px; left: 18%; height: 150px; border-radius: 50%; background: #9d662115; filter: blur(35px); }
+	.hero-panel, .relic-panel { z-index: 1; padding: 27px 24px; align-self: stretch; }
+	.hero-panel { border-right: 1px solid #ffffff0b; }
+	.hero-avatar { position: relative; display: grid; width: 55px; height: 55px; margin-bottom: 22px; place-items: center; border: 1px solid #a48a5c70; border-radius: 50%; background: radial-gradient(circle, #80664155, #26221b 68%); color: #d7bd85; font-family: Georgia, serif; font-size: 26px; }
+	.hero-avatar i { position: absolute; right: 0; bottom: 1px; width: 9px; height: 9px; border: 2px solid #1d1b19; border-radius: 50%; background: #79a36f; }
+	.hero-panel h2, .enemy-details h2 { margin: 6px 0 4px; font-family: Georgia, "Times New Roman", serif; font-size: 22px; font-weight: 400; }
+	.hero-subtitle { margin: 0 0 28px; color: #8d8578; font-size: 11px; }
+	.health-label { display: flex; justify-content: space-between; margin-bottom: 8px; color: #9c9487; font-size: 8px; letter-spacing: .14em; }
+	.health-label strong { color: #dfd7c8; font-size: 11px; letter-spacing: 0; }
+	.health-label small, .enemy-health small { color: #8a8174; font-size: 9px; font-weight: 400; }
+	.health-track { display: block; height: 5px; overflow: hidden; border-radius: 5px; background: #090909a6; }
+	.health-fill, .enemy-health-fill { display: block; height: 100%; transition: width .25s ease; }
+	.health-fill { background: linear-gradient(90deg, #8b493c, #c16f50); }
+	.block-pill { width: fit-content; margin-top: 13px; padding: 5px 8px; border: 1px solid #9a8b5a55; color: #c6b984; font-size: 10px; }
+	.block-pill strong { margin: 0 3px; }
+	.hero-meta { margin-top: 26px; color: #777166; font-size: 9px; }
+	.hero-meta span { margin-right: 5px; color: #bd985a; }
+	.combat-center { z-index: 1; display: flex; min-width: 0; height: 100%; flex-direction: column; align-items: center; justify-content: center; padding: 20px 10px 15px; }
+	.enemy-intent { display: flex; align-items: center; gap: 9px; min-width: 156px; padding: 8px 12px; border: 1px solid #9f64414a; border-radius: 3px; background: #271d19aa; }
+	.enemy-intent.guarding { border-color: #9a89514a; background: #242116aa; }
+	.intent-icon { color: #ce8762; font-family: Georgia, serif; font-size: 22px; }
+	.guarding .intent-icon { color: #c8b875; }
+	.enemy-intent strong, .enemy-intent div span { display: block; }
+	.enemy-intent strong { color: #d0a589; font-size: 8px; letter-spacing: .11em; }
+	.enemy-intent div span { margin-top: 3px; color: #8f8277; font-size: 10px; }
+	.enemy-art { position: relative; display: grid; width: 186px; height: 174px; margin: 5px 0 0; place-items: center; }
+	.enemy-halo { position: absolute; top: 11px; width: 137px; height: 137px; border: 1px solid #9c765035; border-radius: 50%; box-shadow: 0 0 45px #a8511b13, inset 0 0 28px #d1983610; }
+	.enemy-cloak { position: absolute; top: 40px; width: 102px; height: 117px; clip-path: polygon(31% 0, 69% 0, 100% 100%, 50% 80%, 0 100%); background: linear-gradient(110deg, #161619, #36302b 48%, #171719); filter: drop-shadow(0 10px 12px #000); }
+	.enemy-mask { position: absolute; top: 43px; z-index: 1; width: 59px; height: 75px; clip-path: polygon(50% 0, 91% 19%, 82% 72%, 50% 100%, 18% 72%, 9% 19%); background: linear-gradient(135deg, #827868, #383631 58%, #1a1918); box-shadow: inset 0 0 16px #0a0909; }
+	.eye { position: absolute; top: 27px; width: 9px; height: 4px; border-radius: 50%; background: #d58c59; box-shadow: 0 0 9px #dc754b; }
+	.eye-left { left: 12px; transform: rotate(12deg); }
+	.eye-right { right: 12px; transform: rotate(-12deg); }
+	.mask-mark { position: absolute; top: 40px; left: 27px; width: 5px; height: 17px; background: #201d1a; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+	.enemy-crown { position: absolute; z-index: 2; top: 25px; color: #aa8e65; font-size: 30px; transform: rotate(90deg); }
+	.enemy-shadow { position: absolute; bottom: 8px; width: 180px; height: 16px; border-radius: 50%; background: #050505aa; filter: blur(6px); }
+	.enemy-shield { position: absolute; right: 0; bottom: 31px; z-index: 2; padding: 5px 8px; border: 1px solid #9a895155; background: #191812; color: #c8b875; font-size: 10px; }
+	.enemy-details { width: 210px; text-align: center; }
+	.enemy-details .eyebrow { font-size: 8px; }
+	.enemy-details h2 { margin: 5px 0 8px; font-size: 19px; }
+	.enemy-health { display: flex; align-items: center; gap: 8px; }
+	.enemy-health .health-track { flex: 1; height: 4px; }
+	.enemy-health-fill { background: linear-gradient(90deg, #8b493c, #bf684f); }
+	.enemy-health strong { min-width: 43px; color: #c9bfb1; font-size: 10px; text-align: right; }
+	.combat-log { position: absolute; bottom: 12px; left: 50%; display: flex; width: min(94%, 490px); justify-content: center; gap: 16px; transform: translateX(-50%); }
+	.combat-log p { margin: 0; color: #9a9182; font-size: 9px; text-align: center; }
+	.relic-panel { border-left: 1px solid #ffffff0b; text-align: center; }
+	.relic-panel > .eyebrow { margin-top: 6px; }
+	.relic-icon { display: grid; width: 49px; height: 49px; margin: 29px auto 13px; place-items: center; border: 1px solid #a18a594d; border-radius: 50%; background: #b38a2412; color: #c8a667; font-size: 23px; }
+	.relic-panel > strong { display: block; color: #c9bdab; font-family: Georgia, serif; font-size: 13px; font-weight: 400; }
+	.relic-panel > span { display: block; margin-top: 7px; color: #7e776b; font-size: 9px; line-height: 1.5; }
+	.relic-divider { width: 28px; height: 1px; margin: 23px auto 17px; background: #a48c5a5c; }
+	.relic-note { max-width: 150px; margin: auto; color: #767064; font-size: 9px; line-height: 1.7; }
+	.turn-indicator { position: absolute; right: 15px; bottom: 14px; display: flex; align-items: center; gap: 7px; color: #827a6c; font-size: 8px; letter-spacing: .13em; }
+	.turn-indicator strong { color: #c1a16d; font-size: 12px; }
+	.action-area { padding: 19px 0 0; }
+	.hand-heading { display: flex; align-items: center; justify-content: space-between; }
+	.pile-count { display: flex; align-items: center; gap: 8px; color: #7c7569; font-size: 8px; letter-spacing: .11em; }
+	.pile-count strong { margin-left: 3px; color: #c6bba9; font-size: 10px; letter-spacing: 0; }
+	.pile-icon { color: #a18b64; font-size: 17px; }
+	.discard-count { text-align: right; }
+	.hand-title { display: flex; align-items: center; gap: 10px; }
+	.hand-title .eyebrow { color: #c1b6a4; }
+	.hand-count { color: #797367; font-size: 10px; }
+	.cards-row { display: flex; min-height: 160px; justify-content: center; align-items: stretch; gap: 12px; padding: 13px 0 0; }
+	.card {
+		position: relative; display: flex; width: 139px; min-width: 0; height: 151px; flex-direction: column; align-items: center;
+		padding: 10px 10px 8px; border: 1px solid #84734f7a; border-radius: 3px;
+		background: linear-gradient(145deg, #2c2922, #1c1b19 62%, #24211b); color: #ddd3c1; cursor: pointer;
+		transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+	}
+	.card:hover:not(:disabled) { z-index: 2; transform: translateY(-8px); border-color: #c2a466; box-shadow: 0 8px 22px #0008; }
+	.card:focus-visible, .end-turn:focus-visible, .restart-link:focus-visible { outline: 2px solid #d2b579; outline-offset: 3px; }
+	.card:disabled { cursor: not-allowed; }
+	.card.unaffordable { opacity: .58; }
+	.card-cost { position: absolute; top: 7px; left: 8px; display: grid; width: 21px; height: 21px; place-items: center; border: 1px solid #c1a469; border-radius: 50%; background: #28251e; color: #e1c47f; font-size: 10px; font-weight: 700; }
+	.card-art { display: grid; width: 59px; height: 49px; margin: 1px 0 7px; place-items: center; border: 1px solid #a3685166; background: radial-gradient(circle, #994f382b, transparent 70%); color: #ca8666; font-family: Georgia, serif; font-size: 28px; }
+	.card-art.art-guard { border-color: #a5955c66; background: radial-gradient(circle, #a18a3926, transparent 70%); color: #c3b176; }
+	.card-art.art-heal { border-color: #80926666; background: radial-gradient(circle, #79914826, transparent 70%); color: #a8bb82; }
+	.card-name { min-height: 16px; color: #e4dac8; font-family: Georgia, serif; font-size: 12px; font-weight: 400; }
+	.card-rule { width: 38px; height: 1px; margin: 6px 0; background: #a38a5b88; }
+	.card-description { color: #aaa194; font-size: 9px; }
+	.card-type { margin-top: auto; color: #82775f; font-size: 7px; letter-spacing: .15em; }
+	.controls-row { position: relative; display: flex; min-height: 58px; align-items: center; justify-content: space-between; border-top: 1px solid #ffffff10; }
+	.energy-display { display: flex; align-items: center; gap: 6px; }
+	.energy-gem { color: #cfad68; font-size: 19px; text-shadow: 0 0 11px #d0a75370; }
+	.energy-value { color: #e3c782; font-size: 17px; font-weight: 700; }
+	.energy-divider, .energy-max { color: #766d5c; font-size: 12px; }
+	.energy-label { margin-left: 5px; color: #827a6b; font-size: 8px; letter-spacing: .13em; }
+	.end-turn, .result-banner button { padding: 9px 15px; border: 1px solid #94764b; border-radius: 2px; background: #6d4d2a2e; color: #d8c29b; cursor: pointer; font-size: 10px; letter-spacing: .04em; transition: background .15s ease; }
+	.end-turn:hover, .result-banner button:hover { background: #76552e70; }
+	.end-turn span, .result-banner button span { padding-left: 10px; color: #d4ae6d; }
+	.deck-hint { color: #716b60; font-size: 9px; }
+	.result-banner { display: flex; align-items: center; gap: 13px; color: #d2ad71; }
+	.result-banner strong { font-size: 10px; letter-spacing: .12em; }
+	.result-banner.victory strong { color: #bbbd85; }
+	footer { display: flex; justify-content: space-between; padding: 20px 0 24px; border-top: 1px solid #ffffff0d; color: #635e54; font-size: 8px; letter-spacing: .14em; }
+	footer span:first-child { color: #8b7b60; }
+	footer i { padding: 0 5px; color: #a4814d; font-style: normal; }
+	@media (max-width: 900px) {
+		.game-shell { padding: 0 28px; }
+		.battle-board { grid-template-columns: 175px minmax(280px, 1fr) 175px; min-height: 365px; }
+		.hero-panel, .relic-panel { padding-right: 17px; padding-left: 17px; }
+	}
+	@media (max-width: 680px) {
+		.game-shell { padding: 0 16px; }
+		.topbar { height: 65px; }
+		.brand { font-size: 10px; }
+		.run-label { display: none; }
+		.top-actions { gap: 8px; }
+		.title-screen, .about-screen { min-height: calc(100vh - 145px); }
+		.title-orbit { width: 200px; transform: translate(-50%, -72%); }
+		.orbit-mark { font-size: 110px; }
+		.title-content { padding-top: 22px; }
+		.title-content h1 { font-size: clamp(60px, 17vw, 85px); }
+		.title-subtitle { font-size: 13px; }
+		.about-card { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+		.about-emblem { min-height: 95px; font-size: 60px; }
+		.about-details dl > div { font-size: 9px; }
+		main { padding-top: 25px; }
+		.battle-board { grid-template-columns: 1fr 1fr; min-height: auto; padding-bottom: 31px; }
+		.hero-panel, .relic-panel { min-height: 202px; padding: 18px 15px; }
+		.hero-panel { grid-column: 1; grid-row: 1; }
+		.relic-panel { grid-column: 2; grid-row: 1; }
+		.hero-avatar { width: 43px; height: 43px; margin-bottom: 14px; font-size: 20px; }
+		.hero-subtitle { margin-bottom: 15px; }
+		.hero-meta, .relic-divider, .relic-note { display: none; }
+		.relic-icon { width: 40px; height: 40px; margin: 17px auto 10px; }
+		.combat-center { grid-column: 1 / -1; grid-row: 2; min-height: 340px; border-top: 1px solid #ffffff0b; }
+		.turn-indicator { right: 9px; bottom: 10px; }
+		.combat-log { bottom: 3px; flex-direction: column; gap: 3px; }
+		.cards-row { justify-content: flex-start; overflow-x: auto; padding: 13px 2px 12px; }
+		.card { width: 126px; min-width: 126px; height: 145px; }
+		.pile-count { gap: 4px; font-size: 7px; }
+		.hand-title { gap: 5px; }
+		.hand-title .eyebrow { font-size: 8px; }
+		.hand-count { font-size: 8px; }
+		.deck-hint { display: none; }
+		footer { gap: 10px; font-size: 7px; }
+	}
+</style>
