@@ -106,9 +106,17 @@
 
 	{#if screen === 'menu'}
 		<main class="title-screen">
-			<div class="title-orbit" aria-hidden="true">
-				<span class="orbit-mark">V</span>
-				<span class="orbit-star">✦</span>
+			<div class="title-scene" aria-hidden="true">
+				<div class="scene-moon"></div>
+				<div class="scene-haze"></div>
+				<div class="scene-ridge scene-ridge-back"></div>
+				<div class="scene-ridge scene-ridge-front"></div>
+				<div class="scene-path"></div>
+				<div class="scene-tree scene-tree-small scene-tree-small-left"></div>
+				<div class="scene-tree scene-tree-left"></div>
+				<div class="scene-tree scene-tree-right"></div>
+				<div class="scene-tree scene-tree-small scene-tree-small-right"></div>
+				<div class="scene-caption"><span>{t.chapterOne}</span><span>{t.forest}</span></div>
 			</div>
 			<div class="title-content">
 				<p class="eyebrow"><span>✦</span> {t.lands} <span>✦</span></p>
@@ -126,7 +134,6 @@
 				</div>
 				<p class="title-footnote"><span class="live-dot"></span> {t.darkFantasy}</p>
 			</div>
-			<div class="title-bottom"><span>{t.chapterOne}</span><span>✧</span><span>{t.forest}</span></div>
 		</main>
 	{:else if screen === 'about'}
 		<main class="about-screen">
@@ -188,17 +195,18 @@
 
 				<div
 					class="enemy-art"
+					class:enemy-watcher={game.encounter === 0}
 					class:enemy-witch={game.encounter === 1}
 					class:enemy-boss={game.encounter === 2}
 					aria-label={`${t.enemyArt} ${game.enemyName}`}
 				>
 					<div class="enemy-halo"></div>
+					<div class="enemy-adornment" aria-hidden="true"></div>
 					<div class="enemy-cloak"></div>
 					<div class="enemy-mask">
 						<span class="eye eye-left"></span><span class="eye eye-right"></span>
 						<span class="mask-mark"></span>
 					</div>
-					<div class="enemy-crown">{game.encounter === 1 ? '✧' : game.encounter === 2 ? '♜' : '⌁'}</div>
 					<div class="enemy-shadow"></div>
 					{#if game.enemyBlock > 0}
 						<div class="enemy-shield">⬡ {game.enemyBlock}</div>
