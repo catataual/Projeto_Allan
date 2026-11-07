@@ -32,7 +32,7 @@ const portuguese = {
 	stageTitles: ['O bosque sem aurora', 'O brejo dos sussurros', 'O altar das cinzas'],
 	stageLabel: 'FASE',
 	traveler: 'A ERRANTE',
-	heroSubtitle: 'Bearer of the last flame',
+	heroSubtitle: 'Portadora da última chama',
 	vitality: 'VITALIDADE',
 	block: 'bloqueio',
 	heroMeta: 'Em busca de um caminho de volta',
