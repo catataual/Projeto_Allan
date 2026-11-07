@@ -37,14 +37,23 @@ npm run preview
 - `src/lib/game.ts`: baralho, combate, efeitos das cartas e progressão das fases
 - `src/lib/i18n.ts`: textos da interface em português e inglês
 
-## Alterações recentes
+## Histórico de versões
+
+### v0.6.1 — atualização visual e otimização
+
+- Redesenhada a ilustração da tela inicial para mostrar com mais clareza a floresta, a lua e a trilha.
+- Criadas silhuetas distintas para os inimigos das três fases: o Vigia, a Bruxa do Brejo e o Cervo de Cinzas.
+- Consolidado o CSS, removendo regras duplicadas e estilos de elementos que já não eram usados.
+- Mantidas as regras de combate e a interface responsiva.
+
+### v0.6.0 — jogo e recursos principais
 
 - Adicionadas telas de início e “Sobre”, com navegação para o combate.
 - Incluída troca de idioma entre português e inglês, inclusive durante uma partida.
 - Expandido o jogo para três fases com inimigos e dificuldade crescentes.
-- Adicionadas cartas de veneno, compra de cartas e dreno de vida.
-- Organizados os estilos em arquivo CSS separado e removido código de template não utilizado.
+- Adicionadas cartas com efeitos de veneno, compra de cartas, dreno de vida, cura e bloqueio.
+- Separados os estilos da interface em arquivo CSS próprio.
 
 ## Versão
 
-A versão declarada atualmente em `package.json` é `0.0.1`. Atualize-a junto com o `package-lock.json` quando preparar uma nova versão.
+A versão atual do projeto é **v0.6.1**; a anterior era **v0.6.0**. A versão do pacote em `package.json` e `package-lock.json` acompanha o histórico do projeto.
