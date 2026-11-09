@@ -32,12 +32,22 @@ npm run preview
 
 ## Estrutura
 
-- `src/routes/+page.svelte`: telas e interface do jogo
-- `src/routes/game.css`: estilos
+- `src/routes/+layout.svelte`: estrutura compartilhada, navegação, idioma e estado da sessão
+- `src/routes/+page.svelte`: menu inicial (`/`)
+- `src/routes/sobre/+page.svelte`: informações sobre o jogo (`/sobre`)
+- `src/routes/jogar/+page.svelte`: partida e combate (`/jogar`)
+- `src/styles/global.css`: estilos compartilhados das páginas
+- `src/lib/app-state.svelte.ts`: estado compartilhado entre rotas
 - `src/lib/game.ts`: baralho, combate, efeitos das cartas e progressão das fases
 - `src/lib/i18n.ts`: textos da interface em português e inglês
 
 ## Histórico de versões
+
+### v0.6.2 — organização e navegação
+
+- Separadas as páginas do menu, “Sobre” e partida em rotas próprias.
+- Adicionada uma estrutura compartilhada para navegação, idioma e estado da partida.
+- Reorganizados os estilos compartilhados sem alterar o visual ou as regras do jogo.
 
 ### v0.6.1 — atualização visual e otimização
 
@@ -56,4 +66,4 @@ npm run preview
 
 ## Versão
 
-A versão atual do projeto é **v0.6.1**; a anterior era **v0.6.0**. A versão do pacote em `package.json` e `package-lock.json` acompanha o histórico do projeto.
+A versão atual do projeto é **v0.6.2**; a anterior era **v0.6.1**. A versão do pacote em `package.json` e `package-lock.json` acompanha o histórico do projeto.
