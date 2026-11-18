@@ -1,0 +1,122 @@
+/* Estilos exclusivos da página de informações do jogo. */
+.about-screen {
+	display: flex;
+	min-height: min(690px, calc(100vh - 145px));
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 55px 20px;
+}
+
+.about-heading {
+	max-width: 620px;
+	margin-bottom: 30px;
+	text-align: center;
+}
+
+.about-heading h1 {
+	margin: 14px 0 10px;
+	font-size: clamp(32px, 5vw, 48px);
+}
+
+.about-heading > p:last-child {
+	color: #9c9487;
+	font-family: Georgia, serif;
+	font-size: 13px;
+	line-height: 1.7;
+}
+
+.about-card {
+	display: grid;
+	width: min(100%, 700px);
+	grid-template-columns: 150px 1fr;
+	gap: 30px;
+	padding: 30px;
+	border: 1px solid #c9b99135;
+	border-radius: 2px;
+	background: linear-gradient(135deg, #24251e, #171916);
+	box-shadow: 0 20px 55px #0005;
+}
+
+.about-emblem {
+	display: grid;
+	min-height: 150px;
+	place-items: center;
+	border: 1px solid #b7a16b4d;
+	background: radial-gradient(circle, #99753832, transparent 70%);
+	color: #bb9c62;
+	font-family: Georgia, serif;
+	font-size: 84px;
+}
+
+.about-details > .eyebrow {
+	margin-bottom: 12px;
+	color: #c5a873;
+}
+
+.about-description {
+	color: #ddd4c5;
+	font-family: Georgia, serif;
+	font-size: 16px;
+	line-height: 1.8;
+}
+
+.about-details dl {
+	margin: 23px 0 0;
+	border-top: 1px solid #ffffff12;
+}
+
+.about-details dl > div {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 12px 0;
+	border-bottom: 1px solid #ffffff12;
+	font-size: 10px;
+}
+
+.about-details dt {
+	color: #817a6e;
+}
+
+.about-details dd {
+	margin: 0;
+	color: #c9bda9;
+	text-align: right;
+}
+
+.edit-hint {
+	margin: 17px 0 0;
+	color: #777064;
+	font-size: 9px;
+	line-height: 1.7;
+}
+
+.edit-hint code {
+	color: #c6ad7d;
+}
+
+.about-back {
+	margin-top: 25px;
+}
+
+@media (max-width: 680px) {
+	.about-screen {
+		min-height: calc(100vh - 145px);
+	}
+
+	.about-card {
+		grid-template-columns: 1fr;
+		gap: 20px;
+		padding: 20px;
+	}
+
+	.about-emblem {
+		min-height: 95px;
+		font-size: 60px;
+	}
+
+	.about-details dl > div {
+		font-size: 9px;
+	}
+}

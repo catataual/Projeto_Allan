@@ -1,0 +1,311 @@
+/* Regras que todas as telas compartilham: página, cabeçalho e rodapé. */
+* {
+	box-sizing: border-box;
+}
+
+:root {
+	color-scheme: dark;
+}
+
+html {
+	min-width: 360px;
+	background: #11120f;
+}
+
+body {
+	margin: 0;
+	color: #e7e1d5;
+	background:
+		radial-gradient(ellipse at 15% 30%, #35332145, transparent 34rem),
+		radial-gradient(ellipse at 85% 85%, #532e2540, transparent 36rem),
+		#11120f;
+	font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	font-size: 14px;
+}
+
+button {
+	font: inherit;
+}
+
+.game-shell {
+	max-width: 1512px;
+	min-height: 100vh;
+	margin: auto;
+	padding: 0 clamp(20px, 5vw, 76px);
+}
+
+.topbar {
+	display: flex;
+	height: 82px;
+	align-items: center;
+	justify-content: space-between;
+	border-bottom: 1px solid #c9b99120;
+}
+
+.brand {
+	display: flex;
+	align-items: center;
+	gap: 11px;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: #e8dfce;
+	cursor: pointer;
+	font-size: 12px;
+	font-weight: 800;
+	letter-spacing: 0.22em;
+	text-decoration: none;
+}
+
+.brand i {
+	color: #9c8b72;
+	font-style: normal;
+	font-weight: 400;
+}
+
+.brand-mark {
+	display: grid;
+	width: 31px;
+	height: 31px;
+	place-items: center;
+	border: 1px solid #b6a36e;
+	box-shadow: inset 0 0 0 3px #11120f, inset 0 0 0 4px #b6a36e50;
+	color: #d7b87a;
+	font-family: Georgia, serif;
+	font-size: 19px;
+}
+
+.run-label,
+.restart-link {
+	color: #858075;
+	font-size: 10px;
+	letter-spacing: 0.17em;
+}
+
+.top-actions {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+}
+
+.language-switch {
+	display: flex;
+	gap: 3px;
+	padding: 3px;
+	border: 1px solid #c9b99130;
+	border-radius: 2px;
+}
+
+.language-switch button {
+	padding: 5px 7px;
+	border: 0;
+	background: transparent;
+	color: #827a6c;
+	cursor: pointer;
+	font-size: 9px;
+	letter-spacing: 0.08em;
+}
+
+.language-switch button.active-language {
+	background: #8d744037;
+	color: #e0c58f;
+}
+
+.music-control {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	padding: 3px 5px;
+	border: 1px solid #c9b99130;
+	border-radius: 2px;
+}
+
+.music-toggle {
+	display: grid;
+	width: 25px;
+	height: 25px;
+	padding: 0;
+	place-items: center;
+	border: 0;
+	background: transparent;
+	color: #e0c58f;
+	cursor: pointer;
+	font-size: 13px;
+}
+
+.music-volume {
+	width: 54px;
+	margin: 0;
+	accent-color: #b6a36e;
+	cursor: pointer;
+}
+
+.music-control:focus-within {
+	border-color: #b6a36e88;
+}
+
+.live-dot {
+	display: inline-block;
+	width: 6px;
+	height: 6px;
+	margin-right: 8px;
+	border-radius: 50%;
+	background: #ba8f56;
+	box-shadow: 0 0 11px #ba8f5680;
+}
+
+.restart-link {
+	border: 0;
+	background: transparent;
+	cursor: pointer;
+	letter-spacing: 0.11em;
+	text-decoration: none;
+}
+
+.restart-link span {
+	padding-left: 8px;
+	color: #c9a66c;
+	font-size: 16px;
+}
+
+.restart-link:hover {
+	color: #d4bd91;
+}
+
+main {
+	padding-top: 32px;
+}
+
+h1,
+h2,
+p {
+	margin-top: 0;
+}
+
+h1 {
+	margin: 8px 0 0;
+	font-family: Georgia, 'Times New Roman', serif;
+	font-size: clamp(24px, 3vw, 34px);
+	font-weight: 400;
+	letter-spacing: -0.025em;
+}
+
+.eyebrow {
+	margin: 0;
+	color: #9e917c;
+	font-size: 9px;
+	font-weight: 700;
+	letter-spacing: 0.19em;
+}
+
+.eyebrow span {
+	padding: 0 5px;
+	color: #aa8050;
+}
+
+footer {
+	display: flex;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 20px 0 24px;
+	border-top: 1px solid #c9b9911c;
+	color: #807966;
+	font-size: 8px;
+	letter-spacing: 0.14em;
+}
+
+footer span:first-child {
+	color: #8b7b60;
+}
+
+footer i {
+	padding: 0 5px;
+	color: #a4814d;
+	font-style: normal;
+}
+
+.brand:focus-visible,
+.restart-link:focus-visible,
+.primary-action:focus-visible,
+.secondary-action:focus-visible,
+.language-switch button:focus-visible,
+.music-toggle:focus-visible,
+.music-volume:focus-visible,
+.card:focus-visible,
+.end-turn:focus-visible,
+.result-banner button:focus-visible {
+	outline: 2px solid #e1c98f;
+	outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+	.game-shell {
+		padding-right: 28px;
+		padding-left: 28px;
+	}
+}
+
+@media (max-width: 680px) {
+	.game-shell {
+		padding-right: 16px;
+		padding-left: 16px;
+	}
+
+	.topbar {
+		height: 65px;
+	}
+
+	.brand {
+		font-size: 10px;
+	}
+
+	.run-label {
+		display: none;
+	}
+
+	.top-actions {
+		gap: 8px;
+	}
+
+	.language-switch button {
+		padding: 5px;
+	}
+
+	.music-control {
+		gap: 2px;
+		padding: 2px 3px;
+	}
+
+	.music-volume {
+		width: 42px;
+	}
+
+	main {
+		padding-top: 25px;
+	}
+
+	footer {
+		font-size: 7px;
+	}
+}
+
+@media (max-width: 480px) {
+	.topbar {
+		height: auto;
+		min-height: 65px;
+		flex-wrap: wrap;
+		gap: 8px;
+		padding: 10px 0;
+	}
+
+	.top-actions {
+		max-width: 100%;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		gap: 6px;
+	}
+
+	.music-volume {
+		width: 38px;
+	}
+}
