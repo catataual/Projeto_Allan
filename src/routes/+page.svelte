@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '../styles/menu.css';
 	import { goto } from '$app/navigation';
 	import { getContext } from 'svelte';
 	import { createRun } from '#lib/game.js';

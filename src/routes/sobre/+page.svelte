@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '../../styles/sobre.css';
 	import { getContext } from 'svelte';
 	import { APP_STATE, type AppState } from '#lib/app-state.svelte.js';
 	import { messages } from '#lib/i18n.js';

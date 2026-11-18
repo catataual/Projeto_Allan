@@ -1,0 +1,355 @@
+/* Menu: composição da cena, tipografia do título e botões iniciais. */
+.title-screen {
+	display: grid;
+	min-height: min(680px, calc(100vh - 150px));
+	grid-template-columns: minmax(0, 1fr) minmax(340px, 0.9fr);
+	align-items: center;
+	gap: clamp(30px, 7vw, 100px);
+	padding: 48px 4.5% 78px;
+}
+
+/* A floresta é desenhada com camadas HTML e CSS, sem uma imagem externa. */
+.title-scene {
+	position: relative;
+	width: 100%;
+	max-width: 590px;
+	aspect-ratio: 1.02;
+	overflow: hidden;
+	border: 1px solid #c9b99142;
+	background: linear-gradient(180deg, #25302db0 0%, #424331 43%, #25251e 75%, #151712 100%);
+	box-shadow: 0 26px 70px #0008, inset 0 0 0 7px #11120f, inset 0 0 0 8px #c9b99124;
+	isolation: isolate;
+}
+
+/* Pseudo-elementos decorativos que desenham a moldura da ilustração. */
+.title-scene::before,
+.title-scene::after {
+	position: absolute;
+	z-index: 4;
+	border: 1px solid #c9b99180;
+	content: '';
+	pointer-events: none;
+}
+
+.title-scene::before {
+	inset: 18px;
+	border-width: 1px 0 0 1px;
+}
+
+.title-scene::after {
+	right: 18px;
+	bottom: 18px;
+	width: 35px;
+	height: 35px;
+	border-width: 0 1px 1px 0;
+}
+
+/* Círculo iluminado com gradiente radial e brilho externo. */
+.scene-moon {
+	position: absolute;
+	top: 13%;
+	left: 49%;
+	width: 25%;
+	aspect-ratio: 1;
+	border: 1px solid #e1d4a9;
+	border-radius: 50%;
+	background: radial-gradient(circle at 42% 42%, #eee0b1 0 34%, #d2c28e 54%, #ad9f7133 72%, transparent 74%);
+	box-shadow: 0 0 24px #e6d39a82, 0 0 90px #e6d39a47;
+}
+
+.scene-haze {
+	position: absolute;
+	inset: 42% -20% 14%;
+	background:
+		linear-gradient(180deg, transparent, #d6cba21f 45%, transparent 78%),
+		repeating-linear-gradient(176deg, transparent 0 25px, #d5c8990b 26px 28px);
+	filter: blur(1px);
+}
+
+/* Montanhas e caminho: clip-path recorta retângulos em polígonos. */
+.scene-ridge {
+	position: absolute;
+	right: -10%;
+	bottom: 22%;
+	left: -10%;
+	height: 38%;
+}
+
+.scene-ridge-back {
+	bottom: 28%;
+	height: 31%;
+	background: linear-gradient(180deg, #535343, #34372d);
+	clip-path: polygon(0 76%, 13% 65%, 24% 72%, 37% 40%, 47% 54%, 56% 24%, 64% 48%, 76% 57%, 85% 43%, 100% 67%, 100% 100%, 0 100%);
+}
+
+.scene-ridge-front {
+	bottom: 9%;
+	height: 32%;
+	background: linear-gradient(180deg, #303329, #1a1d18 78%);
+	clip-path: polygon(0 57%, 13% 49%, 26% 63%, 39% 51%, 47% 62%, 54% 37%, 61% 62%, 74% 48%, 86% 60%, 100% 42%, 100% 100%, 0 100%);
+}
+
+.scene-path {
+	position: absolute;
+	z-index: 2;
+	bottom: 0;
+	left: 31%;
+	width: 40%;
+	height: 48%;
+	background: linear-gradient(180deg, #d7c68b00 0%, #b9a36a21 42%, #a88d5a82 100%);
+	clip-path: polygon(47% 0, 53% 0, 55% 11%, 50% 20%, 54% 31%, 61% 40%, 57% 51%, 64% 62%, 73% 78%, 100% 100%, 0 100%, 25% 78%, 36% 64%, 32% 52%, 43% 41%, 40% 30%, 46% 20%);
+	filter: blur(1px);
+}
+
+/* Árvores feitas por polígonos; as variantes mudam escala e posição. */
+.scene-tree {
+	position: absolute;
+	z-index: 3;
+	bottom: 8%;
+	width: 19%;
+	height: 62%;
+	background: linear-gradient(90deg, #111510, #20271e 54%, #111510);
+	clip-path: polygon(50% 0, 57% 13%, 70% 14%, 63% 25%, 81% 27%, 68% 39%, 90% 42%, 72% 54%, 100% 59%, 68% 72%, 64% 100%, 36% 100%, 32% 72%, 0 59%, 28% 54%, 10% 42%, 32% 39%, 19% 27%, 37% 25%, 30% 14%, 43% 13%);
+}
+
+.scene-tree-left {
+	left: -3%;
+	transform: scale(1.12);
+	transform-origin: bottom left;
+}
+
+.scene-tree-right {
+	right: -3%;
+	width: 21%;
+	height: 72%;
+	transform: scale(1.1);
+	transform-origin: bottom right;
+}
+
+.scene-tree-small {
+	z-index: 2;
+	bottom: 10%;
+	width: 13%;
+	height: 47%;
+	background: linear-gradient(90deg, #20251c, #35392b 55%, #1b2019);
+}
+
+.scene-tree-small-left {
+	left: 18%;
+}
+
+.scene-tree-small-right {
+	right: 17%;
+	height: 42%;
+}
+
+.scene-caption {
+	position: absolute;
+	z-index: 5;
+	right: 32px;
+	bottom: 29px;
+	left: 32px;
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	padding-top: 9px;
+	border-top: 1px solid #e0d1a353;
+	color: #f0e5c4;
+	font-size: 8px;
+	letter-spacing: 0.18em;
+	text-shadow: 0 2px 8px #000;
+}
+
+.scene-caption span:first-child {
+	color: #e1c281;
+}
+
+.title-content {
+	max-width: 520px;
+}
+
+.title-content > .eyebrow {
+	color: #baaa7a;
+	letter-spacing: 0.24em;
+}
+
+.title-content > .eyebrow span {
+	padding: 0 8px;
+	color: #b87453;
+}
+
+.title-content h1 {
+	margin: 30px 0 20px;
+	color: #eee5d4;
+	font-family: Georgia, 'Times New Roman', serif;
+	font-size: clamp(64px, 8vw, 110px);
+	font-weight: 400;
+	letter-spacing: -0.065em;
+	line-height: 0.78;
+	text-shadow: 0 5px 35px #000;
+}
+
+.title-content h1 i {
+	color: #bd9161;
+	font-size: 0.48em;
+	font-weight: 400;
+	letter-spacing: 0.02em;
+}
+
+.title-subtitle {
+	max-width: 360px;
+	margin: 28px 0 34px;
+	color: #b2aa95;
+	font-family: Georgia, serif;
+	font-size: 16px;
+	line-height: 1.8;
+}
+
+.title-actions {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+}
+
+.primary-action {
+	display: inline-flex;
+	min-width: 220px;
+	align-items: center;
+	justify-content: center;
+	padding: 13px 20px;
+	border: 1px solid #aa8555;
+	background: linear-gradient(120deg, #73583a8c, #3f382c70);
+	color: #e8d5ae;
+	cursor: pointer;
+	font-size: 11px;
+	letter-spacing: 0.08em;
+	line-height: normal;
+	text-align: center;
+	text-decoration: none;
+	transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.primary-action:hover {
+	transform: translateY(-2px);
+	border-color: #dcc38c;
+	background: #846b438c;
+}
+
+.primary-action span {
+	margin-left: 16px;
+	color: #d5b477;
+}
+
+.secondary-action {
+	padding: 7px 12px;
+	border: 0;
+	background: transparent;
+	color: #908777;
+	cursor: pointer;
+	font-size: 10px;
+	letter-spacing: 0.13em;
+	text-decoration: underline;
+	text-decoration-color: #83775f80;
+	text-underline-offset: 5px;
+}
+
+.secondary-action:hover {
+	color: #d4bd91;
+}
+
+.title-footnote {
+	margin: 42px 0 0;
+	color: #928b77;
+	font-size: 8px;
+	letter-spacing: 0.18em;
+}
+
+.title-footnote .live-dot {
+	width: 5px;
+	height: 5px;
+	background: #9c7154;
+	box-shadow: 0 0 12px #a963455c;
+}
+
+@media (max-width: 900px) {
+	.title-screen {
+		grid-template-columns: minmax(0, 1fr) minmax(280px, 0.95fr);
+		gap: 32px;
+		padding-right: 2%;
+		padding-left: 2%;
+	}
+
+	.title-content h1 {
+		font-size: clamp(62px, 8vw, 84px);
+	}
+
+	.scene-caption {
+		right: 27px;
+		bottom: 27px;
+		left: 27px;
+		font-size: 7px;
+	}
+}
+
+@media (max-width: 680px) {
+	.title-screen {
+		min-height: auto;
+		grid-template-columns: 1fr;
+		gap: 27px;
+		padding: 28px 0 63px;
+	}
+
+	.title-scene {
+		width: min(100%, 390px);
+		aspect-ratio: 1.08;
+		justify-self: center;
+	}
+
+	.scene-moon {
+		top: 13%;
+		width: 22%;
+	}
+
+	.scene-tree {
+		height: 78%;
+	}
+
+	.scene-tree-small {
+		height: 45%;
+	}
+
+	.scene-caption {
+		right: 25px;
+		bottom: 25px;
+		left: 25px;
+		font-size: 7px;
+	}
+
+	.title-content {
+		justify-self: center;
+		width: min(100%, 390px);
+	}
+
+	.title-content h1 {
+		margin-top: 20px;
+		font-size: clamp(66px, 16vw, 88px);
+	}
+
+	.title-subtitle {
+		margin: 21px 0 25px;
+		font-size: 14px;
+	}
+
+	.title-actions {
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+
+	.primary-action {
+		min-width: 190px;
+	}
+
+	.title-footnote {
+		margin-top: 24px;
+	}
+}

@@ -1,0 +1,1178 @@
+/* Tela de combate: fase, tabuleiro e informações do jogador. */
+.chapter-line {
+	display: flex;
+	justify-content: space-between;
+	align-items: end;
+	margin-bottom: 24px;
+}
+
+.chapter-line h1 {
+	font-size: clamp(29px, 3.5vw, 40px);
+}
+
+.encounter-number {
+	display: flex;
+	align-items: center;
+	gap: 11px;
+	padding: 10px 13px;
+	border: 1px solid #c9b9912c;
+	background: #1c1e19;
+	color: #857c6c;
+	font-size: 9px;
+	letter-spacing: 0.15em;
+}
+
+.encounter-number strong {
+	color: #ddd2c0;
+	font-size: 14px;
+	letter-spacing: 0.04em;
+}
+
+.encounter-number i {
+	color: #70685c;
+	font-size: 11px;
+	font-style: normal;
+	font-weight: 400;
+}
+
+.battle-board {
+	position: relative;
+	display: grid;
+	min-height: 410px;
+	grid-template-columns: 220px minmax(320px, 1fr) 220px;
+	align-items: center;
+	overflow: hidden;
+	border: 1px solid #c9b99131;
+	background:
+		linear-gradient(90deg, #11130fc0, transparent 32%, transparent 68%, #11130fbd),
+		repeating-linear-gradient(0deg, transparent 0 35px, #d4c39308 36px 37px),
+		linear-gradient(180deg, #252820, #1e201a 60%, #171914);
+	box-shadow: 0 20px 55px #0004, inset 0 0 0 4px #11120f65;
+}
+
+.atmosphere {
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(ellipse at 50% 70%, #a67c4430, transparent 35%),
+		linear-gradient(90deg, #0b0c0a55, transparent 30%, transparent 70%, #0b0c0a55);
+	pointer-events: none;
+}
+
+.ground-glow {
+	position: absolute;
+	right: 18%;
+	bottom: -92px;
+	left: 18%;
+	height: 150px;
+	border-radius: 50%;
+	background: #9d662115;
+	filter: blur(35px);
+}
+
+.hero-panel,
+.relic-panel {
+	z-index: 1;
+	align-self: stretch;
+	padding: 34px 24px 27px;
+}
+
+.hero-panel {
+	position: relative;
+	border-right: 1px solid #c9b9911a;
+}
+
+.relic-panel {
+	border-left: 1px solid #c9b9911a;
+	text-align: center;
+}
+
+.hero-panel .eyebrow,
+.relic-panel .eyebrow,
+.enemy-details .eyebrow {
+	color: #baaa7a;
+}
+
+.hero-avatar {
+	position: relative;
+	display: grid;
+	width: 55px;
+	height: 55px;
+	margin-bottom: 22px;
+	place-items: center;
+	border: 1px solid #b6a36e88;
+	border-radius: 2px;
+	background: linear-gradient(145deg, #55503a, #252820 72%);
+	box-shadow: 4px 4px 0 #11130f;
+	color: #d7bd85;
+	font-family: Georgia, serif;
+	font-size: 26px;
+}
+
+.hero-avatar i {
+	position: absolute;
+	right: 0;
+	bottom: 1px;
+	width: 9px;
+	height: 9px;
+	border: 2px solid #1d1b19;
+	border-radius: 50%;
+	background: #79a36f;
+}
+
+.hero-panel h2,
+.enemy-details h2 {
+	margin: 6px 0 4px;
+	font-family: Georgia, 'Times New Roman', serif;
+	font-size: 22px;
+	font-weight: 400;
+}
+
+.hero-subtitle {
+	margin: 0 0 28px;
+	color: #8d8578;
+	font-size: 11px;
+}
+
+.health-label {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 8px;
+	color: #9c9487;
+	font-size: 8px;
+	letter-spacing: 0.14em;
+}
+
+.health-label strong {
+	color: #dfd7c8;
+	font-size: 11px;
+	letter-spacing: 0;
+}
+
+.health-label small,
+.enemy-health small {
+	color: #8a8174;
+	font-size: 9px;
+	font-weight: 400;
+}
+
+.health-track {
+	display: block;
+	height: 6px;
+	overflow: hidden;
+	border: 1px solid #080907;
+	background: #11130f;
+}
+
+.health-fill,
+.enemy-health-fill {
+	display: block;
+	height: 100%;
+	background: linear-gradient(90deg, #794b3c, #bd7953);
+	transition: width 0.25s ease;
+}
+
+.block-pill {
+	width: fit-content;
+	margin-top: 13px;
+	padding: 5px 8px;
+	border: 1px solid #9a8b5a55;
+	color: #c6b984;
+	font-size: 10px;
+}
+
+.block-pill strong {
+	margin: 0 3px;
+}
+
+.hero-meta {
+	margin-top: 26px;
+	color: #777166;
+	font-size: 9px;
+}
+
+.hero-meta span {
+	margin-right: 5px;
+	color: #bd985a;
+}
+
+.combat-feedback {
+	position: absolute;
+	z-index: 6;
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	pointer-events: none;
+	text-shadow: 0 2px 8px #000;
+	animation: feedback-float 0.9s ease-out both;
+}
+
+.hero-feedback {
+	top: 12px;
+	right: 10px;
+	color: #f0a17b;
+}
+
+.enemy-feedback {
+	top: 10px;
+	right: 0;
+	color: #f0a17b;
+}
+
+.combat-feedback.feedback-heal {
+	color: #b7d18b;
+}
+
+.combat-feedback.feedback-block {
+	color: #c8c27e;
+}
+
+.hero-hit {
+	animation: hero-hit 0.42s ease-out;
+}
+
+.hero-heal {
+	animation: hero-heal 0.65s ease-out;
+}
+
+.hero-blocked {
+	animation: hero-blocked 0.5s ease-out;
+}
+
+/* Intenção do inimigo e ilustração feita de formas CSS. */
+.combat-center {
+	z-index: 1;
+	display: flex;
+	min-width: 0;
+	height: 100%;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 20px 10px 15px;
+}
+
+.enemy-intent {
+	display: flex;
+	min-width: 156px;
+	align-items: center;
+	gap: 9px;
+	padding: 8px 12px;
+	border: 1px solid #b778555e;
+	background: #281e19d9;
+}
+
+.enemy-intent.guarding {
+	border-color: #b9a16a55;
+	background: #242116aa;
+}
+
+.intent-icon {
+	color: #ce8762;
+	font-family: Georgia, serif;
+	font-size: 22px;
+}
+
+.guarding .intent-icon {
+	color: #c8b875;
+}
+
+.enemy-intent strong,
+.enemy-intent div span {
+	display: block;
+}
+
+.enemy-intent strong {
+	color: #d0a589;
+	font-size: 8px;
+	letter-spacing: 0.11em;
+}
+
+.enemy-intent div span {
+	margin-top: 3px;
+	color: #8f8277;
+	font-size: 10px;
+}
+
+.enemy-art {
+	position: relative;
+	display: grid;
+	width: 250px;
+	height: 228px;
+	margin: 8px 0 0;
+	place-items: center;
+	filter: drop-shadow(0 18px 22px #0008);
+}
+
+.enemy-hit {
+	animation: enemy-hit 0.42s ease-out;
+}
+
+.enemy-attacking {
+	animation: enemy-attack 0.5s ease-in-out;
+}
+
+.enemy-guarding {
+	animation: enemy-guard 0.5s ease-out;
+}
+
+.enemy-halo {
+	position: absolute;
+	top: 15px;
+	width: 184px;
+	height: 184px;
+	border: 1px dashed #d3bd8061;
+	border-radius: 50%;
+	background: radial-gradient(circle, #c4a76517, transparent 68%);
+	box-shadow: 0 0 75px #d3974b25, inset 0 0 38px #d1983621;
+}
+
+.enemy-cloak {
+	position: absolute;
+	top: 53px;
+	width: 142px;
+	height: 162px;
+	clip-path: polygon(29% 0, 71% 0, 82% 18%, 100% 100%, 51% 84%, 0 100%, 18% 18%);
+	background: linear-gradient(110deg, #171a15, #454236 48%, #181b16);
+	filter: drop-shadow(0 10px 12px #000);
+}
+
+.enemy-mask {
+	position: absolute;
+	z-index: 1;
+	top: 61px;
+	width: 82px;
+	height: 101px;
+	clip-path: polygon(50% 0, 92% 18%, 84% 73%, 50% 100%, 16% 73%, 8% 18%);
+	background: linear-gradient(135deg, #a59a7b, #555344 58%, #22241d);
+	box-shadow: inset 0 0 16px #0a0909;
+}
+
+/* ::before e ::after desenham chifres/galhos sem adicionar elementos HTML. */
+.enemy-adornment {
+	position: absolute;
+	z-index: 1;
+	top: 17px;
+	width: 210px;
+	height: 110px;
+}
+
+.enemy-adornment::before,
+.enemy-adornment::after {
+	position: absolute;
+	clip-path: polygon(49% 100%, 43% 58%, 4% 25%, 9% 12%, 48% 40%, 73% 0, 85% 6%, 69% 48%, 100% 30%, 100% 46%, 66% 68%, 62% 100%);
+	background: linear-gradient(135deg, #b2a072, #58533d 68%, #29291f);
+	content: '';
+}
+
+/* Variantes da silhueta aplicadas conforme a fase do combate. */
+.enemy-watcher .enemy-adornment::before,
+.enemy-watcher .enemy-adornment::after {
+	top: 0;
+	width: 70px;
+	height: 90px;
+}
+
+.enemy-watcher .enemy-adornment::before {
+	left: 36px;
+	transform: rotate(-13deg);
+}
+
+.enemy-watcher .enemy-adornment::after {
+	right: 36px;
+	transform: scaleX(-1) rotate(-13deg);
+}
+
+.enemy-watcher .enemy-cloak {
+	background: linear-gradient(110deg, #161b18, #4b4937 48%, #191d19);
+}
+
+.enemy-watcher .enemy-mask {
+	background: linear-gradient(135deg, #a69b7a, #64604a 58%, #29291f);
+}
+
+.eye {
+	position: absolute;
+	top: 37px;
+	width: 13px;
+	height: 6px;
+	border-radius: 50%;
+	background: #d58c59;
+	box-shadow: 0 0 9px #dc754b;
+}
+
+.eye-left {
+	left: 17px;
+	transform: rotate(12deg);
+}
+
+.eye-right {
+	right: 17px;
+	transform: rotate(-12deg);
+}
+
+.mask-mark {
+	position: absolute;
+	top: 55px;
+	left: 38px;
+	width: 7px;
+	height: 24px;
+	clip-path: polygon(50% 0, 100% 100%, 0 100%);
+	background: #201d1a;
+}
+
+.enemy-witch .enemy-cloak {
+	top: 65px;
+	width: 112px;
+	height: 151px;
+	clip-path: polygon(35% 0, 65% 0, 82% 25%, 66% 46%, 100% 100%, 50% 83%, 0 100%, 34% 46%, 18% 25%);
+	background: linear-gradient(90deg, #192018, #49513a 48%, #1c2119);
+}
+
+.enemy-witch .enemy-adornment {
+	top: 39px;
+	width: 174px;
+	height: 165px;
+}
+
+.enemy-witch .enemy-adornment::before,
+.enemy-witch .enemy-adornment::after {
+	top: 9px;
+	width: 54px;
+	height: 151px;
+	clip-path: polygon(52% 0, 100% 17%, 70% 40%, 93% 53%, 57% 69%, 49% 100%, 29% 72%, 5% 59%, 33% 40%, 17% 19%);
+	background: linear-gradient(180deg, #9aa16a, #485238 68%, #252b20);
+}
+
+.enemy-witch .enemy-adornment::before {
+	left: 1px;
+	transform: rotate(8deg);
+}
+
+.enemy-witch .enemy-adornment::after {
+	right: 1px;
+	transform: scaleX(-1) rotate(8deg);
+}
+
+.enemy-witch .enemy-mask {
+	top: 72px;
+	width: 72px;
+	height: 92px;
+	clip-path: polygon(50% 0, 78% 12%, 90% 58%, 50% 100%, 10% 58%, 22% 12%);
+	background: linear-gradient(135deg, #a0a17a, #525c40 65%, #20291d);
+}
+
+.enemy-witch .eye {
+	background: #d4df8a;
+	box-shadow: 0 0 14px #c7df70;
+}
+
+.enemy-boss .enemy-halo {
+	width: 202px;
+	height: 202px;
+	border-color: #d0964d77;
+	box-shadow: 0 0 85px #dc6d3740, inset 0 0 45px #d1983621;
+}
+
+.enemy-boss .enemy-cloak {
+	top: 93px;
+	width: 176px;
+	height: 107px;
+	clip-path: polygon(12% 12%, 32% 17%, 42% 0, 54% 15%, 79% 4%, 91% 26%, 100% 83%, 73% 75%, 59% 100%, 42% 79%, 20% 100%, 0 82%);
+	background: linear-gradient(180deg, #524333, #27251e 75%);
+}
+
+.enemy-boss .enemy-adornment {
+	top: 0;
+	width: 230px;
+	height: 129px;
+}
+
+.enemy-boss .enemy-adornment::before,
+.enemy-boss .enemy-adornment::after {
+	top: 0;
+	width: 96px;
+	height: 126px;
+	clip-path: polygon(46% 100%, 47% 59%, 0 28%, 8% 15%, 49% 42%, 72% 0, 83% 5%, 68% 47%, 100% 25%, 100% 42%, 65% 67%, 63% 100%);
+	background: linear-gradient(100deg, #f0d18a, #a96f3b 70%);
+}
+
+.enemy-boss .enemy-adornment::before {
+	left: 15px;
+	transform: rotate(-12deg);
+}
+
+.enemy-boss .enemy-adornment::after {
+	right: 15px;
+	transform: scaleX(-1) rotate(-12deg);
+}
+
+.enemy-boss .enemy-mask {
+	top: 75px;
+	width: 80px;
+	height: 105px;
+	clip-path: polygon(50% 0, 81% 14%, 72% 80%, 50% 100%, 28% 80%, 19% 14%);
+	background: linear-gradient(135deg, #b6a177, #6a5940 62%, #32281f);
+}
+
+.enemy-boss .eye {
+	top: 42px;
+	background: #ffc06d;
+	box-shadow: 0 0 17px #fa603e;
+}
+
+.enemy-shadow {
+	position: absolute;
+	bottom: 5px;
+	width: 218px;
+	height: 19px;
+	border-radius: 50%;
+	background: #050505aa;
+	filter: blur(6px);
+}
+
+.enemy-shield {
+	position: absolute;
+	right: 0;
+	bottom: 31px;
+	z-index: 2;
+	padding: 5px 8px;
+	border: 1px solid #9a895155;
+	background: #191812;
+	color: #c8b875;
+	font-size: 10px;
+}
+
+.enemy-details {
+	width: 210px;
+	text-align: center;
+}
+
+.enemy-details .eyebrow {
+	font-size: 8px;
+}
+
+.enemy-details h2 {
+	margin: 5px 0 8px;
+	font-size: 19px;
+}
+
+.enemy-health {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.enemy-health .health-track {
+	flex: 1;
+	height: 4px;
+	border: 0;
+}
+
+.enemy-health strong {
+	min-width: 43px;
+	color: #c9bfb1;
+	font-size: 10px;
+	text-align: right;
+}
+
+.poison-status {
+	margin: 8px 0 0;
+	color: #b3b982;
+	font-size: 9px;
+}
+
+.combat-log {
+	position: absolute;
+	bottom: 12px;
+	left: 50%;
+	display: flex;
+	width: min(94%, 490px);
+	justify-content: center;
+	gap: 16px;
+	transform: translateX(-50%);
+}
+
+.combat-log p {
+	margin: 0;
+	color: #9a9182;
+	font-size: 9px;
+	text-align: center;
+}
+
+.relic-panel > .eyebrow {
+	margin-top: 6px;
+}
+
+.relic-icon {
+	display: grid;
+	width: 49px;
+	height: 49px;
+	margin: 29px auto 13px;
+	place-items: center;
+	border: 1px solid #a18a594d;
+	border-radius: 2px;
+	background: #b38a241a;
+	box-shadow: inset 0 0 0 4px #171914;
+	color: #c8a667;
+	font-size: 23px;
+}
+
+.relic-panel > strong {
+	display: block;
+	color: #c9bdab;
+	font-family: Georgia, serif;
+	font-size: 13px;
+	font-weight: 400;
+}
+
+.relic-panel > span {
+	display: block;
+	margin-top: 7px;
+	color: #7e776b;
+	font-size: 9px;
+	line-height: 1.5;
+}
+
+.relic-divider {
+	width: 28px;
+	height: 1px;
+	margin: 23px auto 17px;
+	background: #a48c5a5c;
+}
+
+.relic-note {
+	max-width: 150px;
+	margin: auto;
+	color: #767064;
+	font-size: 9px;
+	line-height: 1.7;
+}
+
+.turn-indicator {
+	position: absolute;
+	right: 15px;
+	bottom: 14px;
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	color: #827a6c;
+	font-size: 8px;
+	letter-spacing: 0.13em;
+}
+
+.turn-indicator strong {
+	color: #c1a16d;
+	font-size: 12px;
+}
+
+/* Mão, cartas, energia e comandos do turno. */
+.action-area {
+	padding: 25px 0 0;
+}
+
+.hand-heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #c9b99124;
+}
+
+.pile-count {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: #7c7569;
+	font-size: 8px;
+	letter-spacing: 0.11em;
+}
+
+.pile-count strong {
+	margin-left: 3px;
+	color: #c6bba9;
+	font-size: 10px;
+	letter-spacing: 0;
+}
+
+.pile-icon {
+	color: #a18b64;
+	font-size: 17px;
+}
+
+.discard-count {
+	text-align: right;
+}
+
+.hand-title {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.hand-title .eyebrow {
+	color: #d5c8a9;
+}
+
+.hand-count {
+	color: #797367;
+	font-size: 10px;
+}
+
+.cards-row {
+	display: flex;
+	min-height: 160px;
+	justify-content: center;
+	align-items: stretch;
+	gap: 14px;
+	padding: 18px 0 0;
+}
+
+.card {
+	position: relative;
+	display: flex;
+	width: 148px;
+	min-width: 0;
+	height: 164px;
+	flex-direction: column;
+	align-items: center;
+	padding: 10px 10px 8px;
+	border: 1px solid #b9a16a6b;
+	border-radius: 2px;
+	background:
+		linear-gradient(135deg, #c0aa7710 0 1px, transparent 1px 8px),
+		linear-gradient(155deg, #302f25, #1c1e19 72%);
+	box-shadow: 0 8px 18px #0003, inset 0 0 0 3px #11130f88;
+	color: #ddd3c1;
+	cursor: pointer;
+	transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.card::after {
+	position: absolute;
+	inset: 5px;
+	border: 1px solid #d0bd8a21;
+	content: '';
+	pointer-events: none;
+}
+
+.card:hover:not(:disabled) {
+	z-index: 2;
+	transform: translateY(-10px) rotate(-1deg);
+	border-color: #ddc58c;
+	box-shadow: 0 16px 27px #0008;
+}
+
+.card:disabled {
+	cursor: not-allowed;
+}
+
+.card.unaffordable {
+	opacity: 0.58;
+}
+
+.card-cost {
+	position: absolute;
+	top: 7px;
+	left: 8px;
+	display: grid;
+	width: 21px;
+	height: 21px;
+	place-items: center;
+	border: 1px solid #c1a469;
+	border-radius: 50%;
+	background: #28251e;
+	color: #e1c47f;
+	font-size: 10px;
+	font-weight: 700;
+}
+
+.card-art {
+	display: grid;
+	width: 67px;
+	height: 55px;
+	margin: 3px 0 7px;
+	place-items: center;
+	border: 0;
+	border-bottom: 1px solid #a3685166;
+	background: radial-gradient(ellipse at 50% 100%, #994f3852, transparent 72%);
+	color: #ca8666;
+	font-family: Georgia, serif;
+	font-size: 32px;
+}
+
+.card-art.art-guard {
+	border-color: #a5955c66;
+	background: radial-gradient(ellipse at 50% 100%, #a18a3942, transparent 72%);
+	color: #c3b176;
+}
+
+.card-art.art-heal,
+.card-art.art-poison {
+	border-color: #80926666;
+	background: radial-gradient(ellipse at 50% 100%, #79914845, transparent 72%);
+	color: #a8bb82;
+}
+
+.card-art.art-draw {
+	border-color: #728c9a77;
+	background: radial-gradient(ellipse at 50% 100%, #668c9b45, transparent 72%);
+	color: #9bb9c2;
+}
+
+.card-name {
+	min-height: 16px;
+	color: #e4dac8;
+	font-family: Georgia, serif;
+	font-size: 13px;
+	font-weight: 400;
+}
+
+.card-rule {
+	width: 38px;
+	height: 1px;
+	margin: 6px 0;
+	background: #a38a5b88;
+}
+
+.card-description {
+	max-width: 110px;
+	color: #aaa194;
+	font-size: 9px;
+	line-height: 1.4;
+}
+
+.card-type {
+	margin-top: auto;
+	color: #82775f;
+	font-size: 7px;
+	letter-spacing: 0.2em;
+}
+
+.controls-row {
+	position: relative;
+	display: flex;
+	min-height: 58px;
+	align-items: center;
+	justify-content: space-between;
+	border-top: 1px solid #c9b99124;
+}
+
+.energy-display {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.energy-gem {
+	color: #d2a965;
+	font-size: 19px;
+	text-shadow: 0 0 14px #d9894670;
+}
+
+.energy-value {
+	color: #e3c782;
+	font-size: 17px;
+	font-weight: 700;
+}
+
+.energy-divider,
+.energy-max {
+	color: #766d5c;
+	font-size: 12px;
+}
+
+.energy-label {
+	margin-left: 5px;
+	color: #827a6b;
+	font-size: 8px;
+	letter-spacing: 0.13em;
+}
+
+.end-turn,
+.result-banner button {
+	padding: 9px 15px;
+	border: 1px solid #aa8555;
+	background: #6d4d2a38;
+	color: #d8c29b;
+	cursor: pointer;
+	font-size: 10px;
+	letter-spacing: 0.04em;
+	transition: background 0.15s ease;
+}
+
+.end-turn:hover,
+.result-banner button:hover {
+	background: #76552e70;
+}
+
+.end-turn span,
+.result-banner button span {
+	padding-left: 10px;
+	color: #d4ae6d;
+}
+
+.deck-hint {
+	color: #716b60;
+	font-size: 9px;
+}
+
+.result-banner {
+	display: flex;
+	align-items: center;
+	gap: 13px;
+	color: #d2ad71;
+}
+
+.result-banner strong {
+	font-size: 10px;
+	letter-spacing: 0.12em;
+}
+
+.result-banner.victory strong {
+	color: #bbbd85;
+}
+
+@media (max-width: 900px) {
+	.battle-board {
+		grid-template-columns: 175px minmax(280px, 1fr) 175px;
+		min-height: 365px;
+	}
+
+	.hero-panel,
+	.relic-panel {
+		padding-right: 17px;
+		padding-left: 17px;
+	}
+}
+
+@media (max-width: 680px) {
+	.chapter-line {
+		align-items: center;
+		gap: 12px;
+	}
+
+	.chapter-line h1 {
+		font-size: 27px;
+	}
+
+	.encounter-number {
+		gap: 6px;
+		padding: 8px;
+		font-size: 7px;
+	}
+
+	.encounter-number strong {
+		font-size: 12px;
+	}
+
+	.battle-board {
+		min-height: auto;
+		grid-template-columns: 1fr 1fr;
+		padding-bottom: 31px;
+	}
+
+	.hero-panel,
+	.relic-panel {
+		min-height: 202px;
+		padding: 18px 15px;
+	}
+
+	.hero-panel {
+		grid-column: 1;
+		grid-row: 1;
+	}
+
+	.relic-panel {
+		grid-column: 2;
+		grid-row: 1;
+	}
+
+	.hero-avatar {
+		width: 43px;
+		height: 43px;
+		margin-bottom: 14px;
+		font-size: 20px;
+	}
+
+	.hero-subtitle {
+		margin-bottom: 15px;
+	}
+
+	.hero-meta,
+	.relic-divider,
+	.relic-note {
+		display: none;
+	}
+
+	.relic-icon {
+		width: 40px;
+		height: 40px;
+		margin: 17px auto 10px;
+	}
+
+	.combat-center {
+		min-height: 340px;
+		grid-column: 1 / -1;
+		grid-row: 2;
+		border-top: 1px solid #ffffff0b;
+	}
+
+	.enemy-art {
+		width: 230px;
+		height: 218px;
+	}
+
+	.turn-indicator {
+		right: 9px;
+		bottom: 10px;
+	}
+
+	.combat-log {
+		bottom: 3px;
+		flex-direction: column;
+		gap: 3px;
+	}
+
+	.cards-row {
+		justify-content: flex-start;
+		overflow-x: auto;
+		padding: 13px 2px 12px;
+	}
+
+	.card {
+		width: 126px;
+		min-width: 126px;
+		height: 154px;
+	}
+
+	.pile-count {
+		gap: 4px;
+		font-size: 7px;
+	}
+
+	.hand-title {
+		gap: 5px;
+	}
+
+	.hand-title .eyebrow,
+	.hand-count {
+		font-size: 8px;
+	}
+
+	.deck-hint {
+		display: none;
+	}
+}
+
+@keyframes feedback-float {
+	0% {
+		opacity: 0;
+		transform: translateY(14px) scale(0.85);
+	}
+
+	18% {
+		opacity: 1;
+		transform: translateY(0) scale(1.08);
+	}
+
+	75% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+		transform: translateY(-24px) scale(1);
+	}
+}
+
+@keyframes enemy-hit {
+	0%,
+	100% {
+		transform: translateX(0) rotate(0);
+	}
+
+	30% {
+		transform: translateX(15px) rotate(4deg);
+	}
+
+	60% {
+		transform: translateX(-6px) rotate(-2deg);
+	}
+}
+
+@keyframes enemy-attack {
+	0%,
+	100% {
+		transform: translateX(0) scale(1);
+	}
+
+	45% {
+		transform: translateX(-34px) scale(1.06);
+	}
+
+	70% {
+		transform: translateX(-24px) scale(1.03);
+	}
+}
+
+@keyframes enemy-guard {
+	0%,
+	100% {
+		transform: scale(1);
+	}
+
+	45% {
+		transform: scale(1.06);
+		filter: drop-shadow(0 0 22px #d5c477);
+	}
+}
+
+@keyframes hero-hit {
+	0%,
+	100% {
+		transform: translateX(0);
+	}
+
+	30% {
+		transform: translateX(-8px);
+		filter: brightness(1.55);
+	}
+
+	65% {
+		transform: translateX(5px);
+	}
+}
+
+@keyframes hero-heal {
+	0%,
+	100% {
+		filter: brightness(1);
+	}
+
+	45% {
+		filter: brightness(1.45) drop-shadow(0 0 12px #9fc77b);
+	}
+}
+
+@keyframes hero-blocked {
+	0%,
+	100% {
+		box-shadow: inset 0 0 0 0 #d9c97700;
+	}
+
+	45% {
+		box-shadow: inset 0 0 24px #d9c97766;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.combat-feedback,
+	.hero-hit,
+	.hero-heal,
+	.hero-blocked,
+	.enemy-hit,
+	.enemy-attacking,
+	.enemy-guarding {
+		animation-duration: 0.01ms;
+	}
+}
