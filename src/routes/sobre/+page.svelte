@@ -14,7 +14,10 @@
 		},
 		genre: { pt: 'RPG de cartas por turnos', en: 'Turn-based card RPG' },
 		creator: 'Pedro Luiz, Vitoria Diniz, João Luiz e Giulianno Enrique',
-		version: { pt: 'Protótipo — Unidade 1', en: 'Prototype — Unit 1' }
+		version: {
+			pt: 'Protótipo — Unidade 1 (v0.7.0)',
+			en: 'Prototype — Unit 1 (v0.7.0)'
+		}
 	};
 </script>
 

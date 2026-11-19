@@ -8,7 +8,7 @@ Um RPG original de cartas por turnos, ambientado em um mundo de fantasia sombria
 - TypeScript para as regras e interações do jogo
 - CSS para os estilos
 
-## Áudio do combate
+## Áudio do jogo
 
 - `menu.mp3` toca em loop no menu e na tela “Sobre”, nunca durante o combate.
 - `fight.mp3` toca em loop durante a luta e para quando ela termina.

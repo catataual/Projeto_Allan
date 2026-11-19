@@ -23,6 +23,7 @@ let musicMuted = false;
 
 function playAudio(player: HTMLAudioElement, label: string): void {
 	void player.play().catch((error: unknown) => {
+		if (error instanceof Error && error.name === 'AbortError') return;
 		console.error(`Unable to play ${label}.`, error);
 	});
 }
@@ -44,6 +45,7 @@ function getMusicPlayer(track: MusicTrack): HTMLAudioElement | undefined {
 }
 
 function startMusic(track: Exclude<MusicTrack, 'phase'>): void {
+	stopPhaseMusic();
 	const player = getMusicPlayer(track);
 	if (player?.paused) playAudio(player, `${track} music`);
 }
@@ -85,6 +87,14 @@ export function startMenuMusic(): void {
 
 export function stopMenuMusic(): void {
 	stopMusic('menu');
+}
+
+export function stopPhaseMusic(): void {
+	const player = musicPlayers.get('phase');
+	if (!player) return;
+
+	player.pause();
+	player.currentTime = 0;
 }
 
 export function playPhaseMusic(): void {

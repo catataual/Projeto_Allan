@@ -13,8 +13,8 @@
 	import {
 		playPhaseMusic,
 		playGameSound,
-		startCombatMusic,
 		stopCombatMusic,
+		stopPhaseMusic,
 		type GameSound
 	} from '#lib/sounds.js';
 
@@ -33,6 +33,14 @@
 	type FeedbackKind = 'damage' | 'heal' | 'block' | 'blocked' | 'shield';
 	type EnemyMotion = 'hit' | 'attack' | 'guard';
 	type CombatFeedback = { id: number; amount: number; kind: FeedbackKind };
+	type GameSnapshot = Pick<
+		typeof game,
+		'playerHp' | 'playerBlock' | 'enemyHp' | 'enemyBlock' | 'turn' | 'encounter' | 'phase' | 'enemyIntent'
+	>;
+
+	function snapshotGame(state: GameSnapshot): GameSnapshot {
+		return { ...state, enemyIntent: { ...state.enemyIntent } };
+	}
 
 	let playerFeedback = $state<CombatFeedback | null>(null);
 	let enemyFeedback = $state<CombatFeedback | null>(null);
@@ -42,16 +50,9 @@
 	let playerFeedbackTimeout: ReturnType<typeof setTimeout> | undefined;
 	let enemyFeedbackTimeout: ReturnType<typeof setTimeout> | undefined;
 	let enemyMotionTimeout: ReturnType<typeof setTimeout> | undefined;
+	let healSoundTimeout: ReturnType<typeof setTimeout> | undefined;
 
-	let hasPreviousState = false;
-	let previousPlayerHp = 0;
-	let previousPlayerBlock = 0;
-	let previousEnemyHp = 0;
-	let previousEnemyBlock = 0;
-	let previousTurn = 0;
-	let previousEncounter = 0;
-	let previousPhase: typeof game.phase = 'playing';
-	let previousEnemyIntent: typeof game.enemyIntent = { type: 'attack', amount: 0 };
+	let previousState: GameSnapshot | undefined;
 
 	function format(text: string, values: Record<string, string | number>): string {
 		return text.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ''));
@@ -87,27 +88,18 @@
 
 	$effect(() => {
 		const current = game;
-		if (!hasPreviousState) {
-			previousPlayerHp = current.playerHp;
-			previousPlayerBlock = current.playerBlock;
-			previousEnemyHp = current.enemyHp;
-			previousEnemyBlock = current.enemyBlock;
-			previousTurn = current.turn;
-			previousEncounter = current.encounter;
-			previousPhase = current.phase;
-			previousEnemyIntent = current.enemyIntent;
-			hasPreviousState = true;
+		const previous = previousState;
+		if (!previous) {
+			previousState = snapshotGame(current);
 			return;
 		}
 
-		if (current.phase !== previousPhase) {
+		if (current.phase !== previous.phase) {
 			if (current.phase === 'victory') {
 				stopCombatMusic();
 				playPhaseMusic();
 			} else if (current.phase === 'defeat') {
 				stopCombatMusic();
-			} else {
-				startCombatMusic();
 			}
 		}
 
@@ -116,67 +108,61 @@
 			current.turn === 1 &&
 			current.playerHp === current.playerMaxHp &&
 			current.enemyHp === current.enemyMaxHp &&
-			(previousEncounter !== 0 || previousTurn !== 1 || previousPhase !== 'playing');
-		const encounterChanged = current.encounter !== previousEncounter;
+			(previous.encounter !== 0 || previous.turn !== 1 || previous.phase !== 'playing');
+		const encounterChanged = current.encounter !== previous.encounter;
 		const turnResolved =
 			!encounterChanged &&
-			(current.turn > previousTurn ||
-				(current.phase === 'defeat' && previousPhase === 'playing'));
+			(current.turn > previous.turn ||
+				(current.phase === 'defeat' && previous.phase === 'playing'));
 
-		if (turnResolved && previousEnemyIntent.type === 'attack') {
+		if (turnResolved && previous.enemyIntent.type === 'attack') {
 			animateEnemy('attack');
-			const damage = Math.max(0, previousEnemyIntent.amount - previousPlayerBlock);
-			if (damage === 0 && previousPlayerBlock > 0) showPlayerFeedback('blocked');
-		} else if (turnResolved && previousEnemyIntent.type === 'guard') {
+			const damage = Math.max(0, previous.enemyIntent.amount - previous.playerBlock);
+			if (damage === 0 && previous.playerBlock > 0) showPlayerFeedback('blocked');
+		} else if (turnResolved && previous.enemyIntent.type === 'guard') {
 			animateEnemy('guard');
-			const gainedBlock = current.enemyBlock - previousEnemyBlock;
+			const gainedBlock = current.enemyBlock - previous.enemyBlock;
 			if (gainedBlock > 0) showEnemyFeedback('block', gainedBlock);
 		}
 
 		if (!newRun) {
 			if (encounterChanged) {
-				if (current.playerHp > previousPlayerHp) {
-					showPlayerFeedback('heal', current.playerHp - previousPlayerHp);
+				if (current.playerHp > previous.playerHp) {
+					showPlayerFeedback('heal', current.playerHp - previous.playerHp);
 				}
 			} else {
-				if (current.playerHp < previousPlayerHp) {
-					showPlayerFeedback('damage', previousPlayerHp - current.playerHp);
-				} else if (current.playerHp > previousPlayerHp) {
-					showPlayerFeedback('heal', current.playerHp - previousPlayerHp);
-				} else if (!turnResolved && current.playerBlock > previousPlayerBlock) {
-					showPlayerFeedback('block', current.playerBlock - previousPlayerBlock);
+				if (current.playerHp < previous.playerHp) {
+					showPlayerFeedback('damage', previous.playerHp - current.playerHp);
+				} else if (current.playerHp > previous.playerHp) {
+					showPlayerFeedback('heal', current.playerHp - previous.playerHp);
+				} else if (!turnResolved && current.playerBlock > previous.playerBlock) {
+					showPlayerFeedback('block', current.playerBlock - previous.playerBlock);
 				}
 
-				if (current.enemyHp < previousEnemyHp) {
-					showEnemyFeedback('damage', previousEnemyHp - current.enemyHp);
+				if (current.enemyHp < previous.enemyHp) {
+					showEnemyFeedback('damage', previous.enemyHp - current.enemyHp);
 					if (!turnResolved) animateEnemy('hit');
-				} else if (current.enemyBlock < previousEnemyBlock) {
-					showEnemyFeedback('shield', previousEnemyBlock - current.enemyBlock);
+				} else if (current.enemyBlock < previous.enemyBlock) {
+					showEnemyFeedback('shield', previous.enemyBlock - current.enemyBlock);
 					if (!turnResolved) animateEnemy('hit');
 				}
 			}
 		}
 
-		previousPlayerHp = current.playerHp;
-		previousPlayerBlock = current.playerBlock;
-		previousEnemyHp = current.enemyHp;
-		previousEnemyBlock = current.enemyBlock;
-		previousTurn = current.turn;
-		previousEncounter = current.encounter;
-		previousPhase = current.phase;
-		previousEnemyIntent = current.enemyIntent;
+		previousState = snapshotGame(current);
 	});
 
 	onDestroy(() => {
 		if (playerFeedbackTimeout) clearTimeout(playerFeedbackTimeout);
 		if (enemyFeedbackTimeout) clearTimeout(enemyFeedbackTimeout);
 		if (enemyMotionTimeout) clearTimeout(enemyMotionTimeout);
+		if (healSoundTimeout) clearTimeout(healSoundTimeout);
 		stopCombatMusic();
+		stopPhaseMusic();
 	});
 
 	function restartRun() {
 		appState.game = createRun(true, appState.locale);
-		startCombatMusic();
 	}
 
 	function handlePlayCard(cardId: string) {
@@ -196,10 +182,13 @@
 		}
 
 		if (card.cardKey === 'lifeDrain' && next.playerHp > current.playerHp) {
-			setTimeout(() => playGameSound('heal'), 180);
+			if (healSoundTimeout) clearTimeout(healSoundTimeout);
+			healSoundTimeout = setTimeout(() => {
+				healSoundTimeout = undefined;
+				playGameSound('heal');
+			}, 180);
 		}
 
-		if (next.phase === 'playing') startCombatMusic();
 		appState.game = next;
 	}
 
@@ -213,7 +202,6 @@
 		}
 		if (next.turn > current.turn) playGameSound('draw');
 
-		if (next.phase === 'playing') startCombatMusic();
 		appState.game = next;
 	}
 
@@ -221,7 +209,6 @@
 		const current = appState.game;
 		const next = advanceEncounter(current);
 		if (next.playerHp > current.playerHp) playGameSound('heal');
-		if (next.phase === 'playing') startCombatMusic();
 		appState.game = next;
 	}
 
